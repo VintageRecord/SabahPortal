@@ -13,7 +13,7 @@ export default async function AdminLoginPage({
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-slate-100 px-4 dark:bg-slate-950">
       <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg dark:bg-slate-900">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-2xl text-white">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-maroon-600 text-2xl text-white">
             🏆
           </div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">Panel Admin</h1>
@@ -39,13 +39,13 @@ export default async function AdminLoginPage({
               name="password"
               required
               autoFocus
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-maroon-500 focus:ring-2 focus:ring-maroon-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               placeholder="Masukkan kata laluan admin"
             />
           </div>
           <button
             type="submit"
-            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
+            className="w-full rounded-lg bg-maroon-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-maroon-700"
           >
             Log Masuk
           </button>

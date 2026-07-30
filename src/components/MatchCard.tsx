@@ -46,7 +46,7 @@ export default function MatchCard({
 
       <div className="min-w-0 flex-1 space-y-2">
         {showSport && hasSportContext(match) && (
-          <div className="flex items-center gap-1 text-[11px] font-medium text-indigo-600 dark:text-indigo-400">
+          <div className="flex items-center gap-1 text-[11px] font-medium text-maroon-600 dark:text-maroon-400">
             <span>{match.division.sport.icon}</span>
             <span>
               {match.division.sport.name} · {match.division.name}

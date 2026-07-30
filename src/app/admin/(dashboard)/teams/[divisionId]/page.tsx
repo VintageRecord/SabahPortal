@@ -27,7 +27,7 @@ export default async function AdminDivisionTeamsPage({
 
   return (
     <div>
-      <Link href="/admin/teams" className="text-xs font-medium text-indigo-600 hover:underline">
+      <Link href="/admin/teams" className="text-xs font-medium text-maroon-600 hover:underline">
         ← Semua sukan
       </Link>
       <h1 className="mb-6 mt-1 flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-100">
@@ -70,7 +70,7 @@ export default async function AdminDivisionTeamsPage({
                 />
                 <button
                   type="submit"
-                  className="rounded-lg bg-indigo-600 px-3 py-1 text-xs font-semibold text-white hover:bg-indigo-700"
+                  className="rounded-lg bg-maroon-600 px-3 py-1 text-xs font-semibold text-white hover:bg-maroon-700"
                 >
                   Simpan
                 </button>
@@ -109,7 +109,7 @@ export default async function AdminDivisionTeamsPage({
             />
             <button
               type="submit"
-              className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 dark:bg-indigo-600 dark:hover:bg-indigo-700"
+              className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 dark:bg-maroon-600 dark:hover:bg-maroon-700"
             >
               + Tambah Pasukan
             </button>

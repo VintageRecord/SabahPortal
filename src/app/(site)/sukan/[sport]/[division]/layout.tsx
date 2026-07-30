@@ -36,7 +36,7 @@ export default async function DivisionLayout({
               href={`/sukan/${sport.slug}/${d.slug}`}
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
                 d.slug === divisionSlug
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-maroon-600 text-white"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
               }`}
             >

@@ -27,7 +27,7 @@ export default async function SportPage({
           <Link
             key={division.id}
             href={`/sukan/${sport.slug}/${division.slug}`}
-            className="rounded-xl border border-slate-200 bg-white p-4 text-center font-semibold text-slate-700 transition hover:border-indigo-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+            className="rounded-xl border border-slate-200 bg-white p-4 text-center font-semibold text-slate-700 transition hover:border-maroon-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
           >
             {division.name}
           </Link>

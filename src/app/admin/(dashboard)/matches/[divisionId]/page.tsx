@@ -28,7 +28,7 @@ export default async function AdminDivisionMatchesPage({
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <Link href="/admin/matches" className="text-xs font-medium text-indigo-600 hover:underline">
+          <Link href="/admin/matches" className="text-xs font-medium text-maroon-600 hover:underline">
             ← Semua sukan
           </Link>
           <h1 className="mt-1 flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-100">
@@ -85,7 +85,7 @@ export default async function AdminDivisionMatchesPage({
                     type="submit"
                     className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
                       match.status === status
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-maroon-600 text-white"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
                     }`}
                   >
@@ -175,7 +175,7 @@ export default async function AdminDivisionMatchesPage({
                   <div className="col-span-2 flex items-end sm:col-span-4">
                     <button
                       type="submit"
-                      className="rounded-lg bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+                      className="rounded-lg bg-maroon-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-maroon-700"
                     >
                       Simpan Perubahan
                     </button>
@@ -213,7 +213,7 @@ function ScoreControl({ matchId, side, score }: { matchId: string; side: "A" | "
         <input type="hidden" name="delta" value={1} />
         <button
           type="submit"
-          className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-100 text-sm font-bold text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-950 dark:text-indigo-300"
+          className="flex h-7 w-7 items-center justify-center rounded-lg bg-maroon-100 text-sm font-bold text-maroon-700 hover:bg-maroon-200 dark:bg-maroon-950 dark:text-maroon-300"
         >
           +
         </button>

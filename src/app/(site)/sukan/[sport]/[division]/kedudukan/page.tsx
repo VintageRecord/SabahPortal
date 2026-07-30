@@ -103,7 +103,7 @@ export default async function DivisionStandingsPage({
                 <td className="px-2 py-2 text-center text-slate-600 dark:text-slate-300">
                   {row.diff > 0 ? `+${row.diff}` : row.diff}
                 </td>
-                <td className="px-3 py-2 text-center text-sm font-bold text-indigo-600">
+                <td className="px-3 py-2 text-center text-sm font-bold text-maroon-600">
                   {row.points}
                 </td>
               </tr>

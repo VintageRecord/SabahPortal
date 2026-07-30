@@ -23,7 +23,7 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-indigo-900/20 bg-indigo-700 text-white shadow-sm">
+    <header className="sticky top-0 z-40 border-b border-maroon-900/20 bg-maroon-700 text-white shadow-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-3 py-3 sm:px-6">
         <Link href="/" className="flex items-center gap-2 font-bold" onClick={() => setMenuOpen(false)}>
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 text-lg">
@@ -99,7 +99,7 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
       </div>
 
       {menuOpen && (
-        <div className="border-t border-white/10 bg-indigo-700 md:hidden">
+        <div className="border-t border-white/10 bg-maroon-700 md:hidden">
           <div className="max-h-[75vh] overflow-y-auto px-3 py-2">
             {NAV_LINKS.map((link) => (
               <Link

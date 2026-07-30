@@ -48,7 +48,7 @@ export default async function JadualPage({
         <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
           {formatDateLong(date)}
           {date === todayKey && (
-            <span className="ml-2 rounded-full bg-indigo-100 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300">
+            <span className="ml-2 rounded-full bg-maroon-100 px-2 py-0.5 text-[11px] font-semibold text-maroon-700 dark:bg-maroon-900 dark:text-maroon-300">
               Hari Ini
             </span>
           )}
@@ -68,7 +68,7 @@ export default async function JadualPage({
             href={`/jadual?date=${d}`}
             className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
               d === date
-                ? "bg-indigo-600 text-white"
+                ? "bg-maroon-600 text-white"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
             }`}
           >

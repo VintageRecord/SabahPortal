@@ -19,14 +19,14 @@ export default async function HomePage() {
     <div>
       <LiveTicker initialMatches={liveMatches} />
 
-      <section className="bg-gradient-to-br from-indigo-700 via-indigo-600 to-blue-600 px-4 py-10 text-white sm:px-6 sm:py-14">
+      <section className="bg-gradient-to-br from-maroon-900 via-maroon-800 to-maroon-700 px-4 py-10 text-white sm:px-6 sm:py-14">
         <div className="mx-auto max-w-6xl">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-indigo-200">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-maroon-200">
             {settings.organizer}
           </p>
           <h1 className="text-3xl font-extrabold sm:text-4xl md:text-5xl">{settings.title}</h1>
-          <p className="mt-2 text-indigo-100">{settings.subtitle}</p>
-          <div className="mt-4 flex flex-wrap gap-3 text-sm text-indigo-100">
+          <p className="mt-2 text-maroon-100">{settings.subtitle}</p>
+          <div className="mt-4 flex flex-wrap gap-3 text-sm text-maroon-100">
             <span className="rounded-full bg-white/15 px-3 py-1">
               📅 {formatDateLong(settings.startDate)} — {formatDateLong(settings.endDate)}
             </span>
@@ -36,7 +36,7 @@ export default async function HomePage() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/jadual"
-              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50"
+              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-maroon-700 transition hover:bg-maroon-50"
             >
               Lihat Jadual Penuh
             </Link>
@@ -57,7 +57,7 @@ export default async function HomePage() {
             <Link
               key={sport.id}
               href={`/sukan/${sport.slug}`}
-              className="group flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-center transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+              className="group flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-center transition hover:-translate-y-0.5 hover:border-maroon-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
             >
               <span className="text-3xl">{sport.icon}</span>
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
@@ -76,7 +76,7 @@ export default async function HomePage() {
           <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
             Perlawanan Hari Ini
           </h2>
-          <Link href="/jadual" className="text-sm font-medium text-indigo-600 hover:underline">
+          <Link href="/jadual" className="text-sm font-medium text-maroon-600 hover:underline">
             Lihat semua →
           </Link>
         </div>

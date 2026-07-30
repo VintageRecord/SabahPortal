@@ -51,7 +51,7 @@ export default async function AdminMatchesIndexPage() {
                 <Link
                   key={division.id}
                   href={`/admin/matches/${division.id}`}
-                  className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-indigo-100 hover:text-indigo-700 dark:bg-slate-800 dark:text-slate-300"
+                  className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-maroon-100 hover:text-maroon-700 dark:bg-slate-800 dark:text-slate-300"
                 >
                   {division.name}
                 </Link>

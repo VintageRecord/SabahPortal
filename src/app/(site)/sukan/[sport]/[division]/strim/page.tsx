@@ -31,7 +31,7 @@ export default async function DivisionStreamPage({
               href={stream.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-maroon-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
             >
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xl dark:bg-slate-800">
                 {PLATFORM_ICON[stream.platform]}

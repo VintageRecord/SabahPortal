@@ -71,7 +71,7 @@ export default async function AdminStreamsPage() {
               </label>
               <button
                 type="submit"
-                className="rounded-lg bg-indigo-600 px-3 py-1 text-xs font-semibold text-white hover:bg-indigo-700"
+                className="rounded-lg bg-maroon-600 px-3 py-1 text-xs font-semibold text-white hover:bg-maroon-700"
               >
                 Simpan
               </button>
@@ -94,7 +94,7 @@ export default async function AdminStreamsPage() {
 
       <form
         action={createStreamAction}
-        className="mt-6 grid grid-cols-1 gap-2 rounded-xl border border-dashed border-indigo-300 bg-indigo-50/50 p-4 sm:grid-cols-6 sm:items-center dark:border-indigo-900 dark:bg-indigo-950/20"
+        className="mt-6 grid grid-cols-1 gap-2 rounded-xl border border-dashed border-maroon-300 bg-maroon-50/50 p-4 sm:grid-cols-6 sm:items-center dark:border-maroon-900 dark:bg-maroon-950/20"
       >
         <select
           name="divisionId"
@@ -139,7 +139,7 @@ export default async function AdminStreamsPage() {
           </label>
           <button
             type="submit"
-            className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 dark:bg-indigo-600 dark:hover:bg-indigo-700"
+            className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 dark:bg-maroon-600 dark:hover:bg-maroon-700"
           >
             + Tambah
           </button>

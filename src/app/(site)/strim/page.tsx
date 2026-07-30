@@ -23,7 +23,7 @@ export default async function StreamsPage() {
           {streams.map((stream) => (
             <div
               key={stream.id}
-              className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+              className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-maroon-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
             >
               <a
                 href={stream.url}
@@ -51,7 +51,7 @@ export default async function StreamsPage() {
               </a>
               <Link
                 href={`/sukan/${stream.division.sport.slug}/${stream.division.slug}`}
-                className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:underline"
+                className="flex items-center gap-1.5 text-xs font-medium text-maroon-600 hover:underline"
               >
                 {stream.division.sport.icon} {stream.division.sport.name} · {stream.division.name}
               </Link>

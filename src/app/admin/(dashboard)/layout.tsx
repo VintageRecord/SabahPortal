@@ -18,7 +18,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-maroon-600 text-white">
               🏆
             </span>
             <div>
@@ -29,7 +29,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/" className="text-xs font-medium text-indigo-600 hover:underline">
+            <Link href="/" className="text-xs font-medium text-maroon-600 hover:underline">
               Lihat Laman Awam
             </Link>
             <form action={logoutAction}>
