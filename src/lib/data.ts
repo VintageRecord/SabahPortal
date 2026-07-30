@@ -1,0 +1,82 @@
+import { prisma } from "@/lib/prisma";
+
+export async function getSettings() {
+  const settings = await prisma.eventSettings.findUnique({ where: { id: 1 } });
+  if (!settings) {
+    throw new Error("Event settings not seeded. Run `npm run db:seed`.");
+  }
+  return settings;
+}
+
+export async function getSports() {
+  return prisma.sport.findMany({
+    orderBy: { order: "asc" },
+    include: { divisions: { orderBy: { order: "asc" } } },
+  });
+}
+
+export async function getSportBySlug(slug: string) {
+  return prisma.sport.findUnique({
+    where: { slug },
+    include: { divisions: { orderBy: { order: "asc" } } },
+  });
+}
+
+export async function getDivision(sportSlug: string, divisionSlug: string) {
+  const sport = await prisma.sport.findUnique({ where: { slug: sportSlug } });
+  if (!sport) return null;
+  const division = await prisma.division.findFirst({
+    where: { sportId: sport.id, slug: divisionSlug },
+  });
+  if (!division) return null;
+  return { sport, division };
+}
+
+export async function getDivisionMatches(divisionId: string) {
+  return prisma.match.findMany({
+    where: { divisionId },
+    include: { teamA: true, teamB: true },
+    orderBy: [{ date: "asc" }, { time: "asc" }],
+  });
+}
+
+export async function getDivisionTeams(divisionId: string) {
+  return prisma.team.findMany({ where: { divisionId }, orderBy: { name: "asc" } });
+}
+
+export async function getDivisionStreams(divisionId: string) {
+  return prisma.streamLink.findMany({ where: { divisionId }, orderBy: { order: "asc" } });
+}
+
+export async function getLiveMatches() {
+  return prisma.match.findMany({
+    where: { status: "LIVE" },
+    include: {
+      teamA: true,
+      teamB: true,
+      division: { include: { sport: true } },
+    },
+    orderBy: [{ date: "asc" }, { time: "asc" }],
+  });
+}
+
+export async function getMatchesByDate(date: string) {
+  const start = new Date(date + "T00:00:00.000Z");
+  const end = new Date(date + "T23:59:59.999Z");
+  return prisma.match.findMany({
+    where: { date: { gte: start, lte: end } },
+    include: {
+      teamA: true,
+      teamB: true,
+      division: { include: { sport: true } },
+    },
+    orderBy: [{ time: "asc" }],
+  });
+}
+
+export async function getAllStreams() {
+  return prisma.streamLink.findMany({
+    include: { division: { include: { sport: true } } },
+    orderBy: [{ isLive: "desc" }, { order: "asc" }],
+  });
+}

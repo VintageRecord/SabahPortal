@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MatchStatus {
+  UPCOMING
+  LIVE
+  FINISHED
+  POSTPONED
+}
+
+enum StreamPlatform {
+  YOUTUBE
+  TIKTOK
+  FACEBOOK
+  INSTAGRAM
+  OTHER
+}
+
+model EventSettings {
+  id         Int      @id @default(1)
+  title      String   @default("Kejohanan Sukan 2026")
+  subtitle   String   @default("Kejohanan Sukan Antara Daerah Sabah")
+  organizer  String   @default("Jawatankuasa Kejohanan Sukan Sabah 2026")
+  startDate  DateTime
+  endDate    DateTime
+  pointsWin  Int      @default(3)
+  pointsDraw Int      @default(1)
+  pointsLoss Int      @default(0)
+  updatedAt  DateTime @updatedAt
+}
+
+model Sport {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  name      String
+  icon      String
+  order     Int        @default(0)
+  divisions Division[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Division {
+  id      String @id @default(cuid())
+  sportId String
+  sport   Sport  @relation(fields: [sportId], references: [id], onDelete: Cascade)
+  slug    String
+  name    String
+  format  String @default("round-robin")
+  order   Int    @default(0)
+
+  teams   Team[]
+  matches Match[]
+  streams StreamLink[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sportId, slug])
+}
+
+model Team {
+  id         String @id @default(cuid())
+  divisionId String
+  division   Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  name       String
+  shortName  String
+  color      String @default("#1a56db")
+
+  homeMatches Match[] @relation("TeamA")
+  awayMatches Match[] @relation("TeamB")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Match {
+  id         String      @id @default(cuid())
+  divisionId String
+  division   Division    @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  round      Int         @default(1)
+  teamAId    String
+  teamA      Team        @relation("TeamA", fields: [teamAId], references: [id], onDelete: Cascade)
+  teamBId    String
+  teamB      Team        @relation("TeamB", fields: [teamBId], references: [id], onDelete: Cascade)
+  scoreA     Int         @default(0)
+  scoreB     Int         @default(0)
+  status     MatchStatus @default(UPCOMING)
+  date       DateTime
+  time       String
+  venue      String
+  minute     String      @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([divisionId])
+  @@index([status])
+}
+
+model StreamLink {
+  id         String         @id @default(cuid())
+  divisionId String
+  division   Division       @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  platform   StreamPlatform
+  title      String
+  url        String
+  isLive     Boolean        @default(false)
+  order      Int            @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

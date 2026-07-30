@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kejohanan Sukan 2026
 
-## Getting Started
+A Sofascore-inspired live scoring portal for **Kejohanan Sukan 2026**, covering 9 sports played
+in a round-robin format:
 
-First, run the development server:
+- Badminton (Berpasukan)
+- Sepak Takraw (Berpasukan)
+- Pickleball (Berpasukan)
+- Ping Pong (Berpasukan)
+- Bola Tampar (Lelaki / Wanita)
+- Dart (Berpasukan)
+- Petanque (Berpasukan)
+- Karom (Berpasukan)
+- Futsal (Lelaki / Veteran / Wanita)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Public site: live score ticker, fixtures grouped by round, round-robin standings tables, and a
+streaming tab where the organizer can link out to TikTok, YouTube, Facebook or other live
+broadcasts.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Admin panel (`/admin`): update live scores and match status, manage teams, regenerate
+round-robin fixtures, manage stream links, and edit event settings (title, dates, points system).
+Everything seeded in the database (sports, teams, venues, times) can be changed later from here.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js (App Router) + TypeScript + Tailwind CSS
+- PostgreSQL + Prisma ORM
+- Cookie-based admin session (no external auth service required)
 
-## Learn More
+## Getting started
 
-To learn more about Next.js, take a look at the following resources:
+1. Install dependencies:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```bash
+   npm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. Copy `.env.example` to `.env` and fill in your own values:
 
-## Deploy on Vercel
+   ```bash
+   cp .env.example .env
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   - `DATABASE_URL` — PostgreSQL connection string.
+   - `ADMIN_PASSWORD` — password for `/admin`.
+   - `SESSION_SECRET` — random string used to sign the admin session cookie.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Make sure PostgreSQL is running and the database in `DATABASE_URL` exists, then run migrations:
+
+   ```bash
+   npm run db:migrate
+   ```
+
+4. Seed the championship data (9 sports, divisions, Sabah-district teams, round-robin fixtures):
+
+   ```bash
+   npm run db:seed
+   ```
+
+5. Start the dev server:
+
+   ```bash
+   npm run dev
+   ```
+
+   Visit [http://localhost:3000](http://localhost:3000) for the public site and
+   [http://localhost:3000/admin](http://localhost:3000/admin) for the admin panel.
+
+## Useful scripts
+
+| Script              | Description                                     |
+| -------------------- | ------------------------------------------------ |
+| `npm run dev`         | Start the Next.js dev server                     |
+| `npm run build`       | Production build                                  |
+| `npm run start`       | Run the production build                          |
+| `npm run lint`        | Lint the codebase                                  |
+| `npm run db:migrate`  | Run Prisma migrations                              |
+| `npm run db:seed`     | Reset and seed the database with demo championship data |
+| `npm run db:studio`   | Open Prisma Studio to browse/edit the database directly |
+
+## Data model
+
+`Sport` → `Division` (e.g. Lelaki/Wanita/Veteran/Berpasukan) → `Team` and `Match`, plus
+`StreamLink` per division and a single `EventSettings` row for global event info and the
+win/draw/loss points system used to compute standings. Standings are always derived from
+`FINISHED` matches — nothing is stored redundantly, so admin edits to scores/status are reflected
+immediately everywhere.
+
+## Notes on deployment
+
+- The app needs a persistent Node.js server (not a purely static host) since it reads/writes
+  PostgreSQL on every request via Prisma and uses Next.js Server Actions for admin mutations.
+- Live scores refresh on the public site via lightweight polling (`/api/live`,
+  `/api/matches?divisionId=...`) every 10 seconds — no websocket infrastructure required.
