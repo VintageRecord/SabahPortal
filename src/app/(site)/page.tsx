@@ -1,5 +1,6 @@
 import Link from "next/link";
 import LiveTicker from "@/components/LiveTicker";
+import LiveMatchesSection from "@/components/LiveMatchesSection";
 import MatchCard from "@/components/MatchCard";
 import SportIcon from "@/components/icons/SportIcon";
 import UiIcon from "@/components/icons/UiIcon";
@@ -77,6 +78,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <LiveMatchesSection initialMatches={liveMatches} />
 
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <h2 className="mb-5 text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">Sukan</h2>
