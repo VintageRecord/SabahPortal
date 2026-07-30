@@ -215,10 +215,10 @@ const STREAM_SEED: {
   url: string;
   isLive: boolean;
 }[] = [
-  { sportSlug: "futsal", divSlug: "lelaki", platform: "YOUTUBE", title: "Live YouTube - Futsal Lelaki", url: "https://www.youtube.com/@SabahSukan", isLive: true },
+  { sportSlug: "futsal", divSlug: "lelaki", platform: "YOUTUBE", title: "Live YouTube - Futsal Lelaki", url: "https://www.youtube.com/watch?v=jNQXAC9IVRw", isLive: true },
   { sportSlug: "futsal", divSlug: "wanita", platform: "TIKTOK", title: "Live TikTok - Futsal Wanita", url: "https://www.tiktok.com/@sabahsukan", isLive: false },
   { sportSlug: "badminton", divSlug: "berpasukan", platform: "FACEBOOK", title: "Live Facebook - Badminton", url: "https://www.facebook.com/SabahSukan", isLive: false },
-  { sportSlug: "bola-tampar", divSlug: "lelaki", platform: "YOUTUBE", title: "Live YouTube - Bola Tampar Lelaki", url: "https://www.youtube.com/@SabahSukan", isLive: true },
+  { sportSlug: "bola-tampar", divSlug: "lelaki", platform: "YOUTUBE", title: "Live YouTube - Bola Tampar Lelaki", url: "https://www.youtube.com/watch?v=jNQXAC9IVRw", isLive: true },
 ];
 
 const ROUND1_SLOTS: { time: string; status: MatchStatus }[] = [

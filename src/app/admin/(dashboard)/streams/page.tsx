@@ -16,8 +16,14 @@ export default async function AdminStreamsPage() {
   return (
     <div>
       <h1 className="mb-1 text-xl font-bold text-slate-800 dark:text-slate-100">Pautan Strim</h1>
-      <p className="mb-6 text-sm text-slate-500">
+      <p className="mb-2 text-sm text-slate-500">
         Tambah pautan TikTok, YouTube, Facebook atau platform lain untuk setiap bahagian sukan.
+      </p>
+      <p className="mb-6 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+        <strong>Untuk YouTube &amp; Facebook:</strong> tampal pautan video / siaran langsung
+        (cth. youtube.com/watch?v=... atau pautan video Facebook Live), bukan pautan channel/halaman
+        utama — supaya ia boleh dibenamkan terus di laman awam. TikTok &amp; Instagram tidak
+        membenarkan strim langsung dibenamkan, jadi ia akan dipaparkan sebagai butang &quot;Tonton&quot;.
       </p>
 
       <div className="space-y-3">
