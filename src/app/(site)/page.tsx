@@ -1,17 +1,19 @@
 import Link from "next/link";
 import LiveTicker from "@/components/LiveTicker";
 import LiveMatchesSection from "@/components/LiveMatchesSection";
+import LiveTv from "@/components/LiveTv";
 import MatchCard from "@/components/MatchCard";
 import SportIcon from "@/components/icons/SportIcon";
 import UiIcon from "@/components/icons/UiIcon";
-import { getLiveMatches, getMatchesByDate, getSettings, getSports } from "@/lib/data";
+import { getLiveMatches, getLiveStreams, getMatchesByDate, getSettings, getSports } from "@/lib/data";
 import { formatDateLong, toDateKey } from "@/lib/format";
 
 export default async function HomePage() {
-  const [settings, sports, liveMatches] = await Promise.all([
+  const [settings, sports, liveMatches, liveStreams] = await Promise.all([
     getSettings(),
     getSports(),
     getLiveMatches(),
+    getLiveStreams(),
   ]);
 
   const todayKey = toDateKey(new Date());
@@ -78,6 +80,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <LiveTv streams={liveStreams} />
 
       <LiveMatchesSection initialMatches={liveMatches} />
 

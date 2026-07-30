@@ -81,6 +81,14 @@ export async function getAllStreams() {
   });
 }
 
+export async function getLiveStreams() {
+  return prisma.streamLink.findMany({
+    where: { isLive: true },
+    include: { division: { include: { sport: true } } },
+    orderBy: { order: "asc" },
+  });
+}
+
 export async function getMatchDetail(matchId: string) {
   const match = await prisma.match.findUnique({
     where: { id: matchId },
