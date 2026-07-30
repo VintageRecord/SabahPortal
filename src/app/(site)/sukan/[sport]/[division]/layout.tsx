@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getSportBySlug } from "@/lib/data";
+import { getSettings, getSportBySlug } from "@/lib/data";
 import DivisionTabs from "@/components/DivisionTabs";
 import SportIcon from "@/components/icons/SportIcon";
 
@@ -12,7 +12,7 @@ export default async function DivisionLayout({
   params: Promise<{ sport: string; division: string }>;
 }) {
   const { sport: sportSlug, division: divisionSlug } = await params;
-  const sport = await getSportBySlug(sportSlug);
+  const [sport, settings] = await Promise.all([getSportBySlug(sportSlug), getSettings()]);
   if (!sport) notFound();
   const division = sport.divisions.find((d) => d.slug === divisionSlug);
   if (!division) notFound();
@@ -27,7 +27,7 @@ export default async function DivisionLayout({
           <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 sm:text-2xl">
             {sport.name}
           </h1>
-          <p className="text-sm text-slate-500">Kejohanan Sukan 2026 · Format Round-Robin</p>
+          <p className="text-sm text-slate-500">{settings.title} · Format Round-Robin</p>
         </div>
       </div>
 

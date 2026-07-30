@@ -13,5 +13,12 @@ export default async function DivisionFixturesPage({
 
   const matches = await getDivisionMatches(result.division.id);
 
-  return <DivisionFixtures divisionId={result.division.id} initialMatches={matches} />;
+  return (
+    <DivisionFixtures
+      divisionId={result.division.id}
+      initialMatches={matches}
+      sportSlug={sportSlug}
+      divisionSlug={divisionSlug}
+    />
+  );
 }

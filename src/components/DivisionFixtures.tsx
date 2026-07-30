@@ -17,9 +17,13 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 export default function DivisionFixtures({
   divisionId,
   initialMatches,
+  sportSlug,
+  divisionSlug,
 }: {
   divisionId: string;
   initialMatches: MatchWithTeams[];
+  sportSlug: string;
+  divisionSlug: string;
 }) {
   const [matches, setMatches] = useState(initialMatches);
   const [filter, setFilter] = useState<FilterKey>("ALL");
@@ -98,7 +102,12 @@ export default function DivisionFixtures({
               </h3>
               <div className="grid gap-2 sm:grid-cols-2">
                 {roundMatches.map((match) => (
-                  <MatchCard key={match.id} match={match} />
+                  <MatchCard
+                    key={match.id}
+                    match={match}
+                    sportSlug={sportSlug}
+                    divisionSlug={divisionSlug}
+                  />
                 ))}
               </div>
             </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { getSettings } from "@/lib/data";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,10 +13,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Kejohanan Sukan 2026",
-  description: "Keputusan langsung, jadual perlawanan dan kedudukan Kejohanan Sukan 2026",
-};
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  return {
+    title: settings.title,
+    description: `Keputusan langsung, jadual perlawanan dan kedudukan ${settings.title}`,
+  };
+}
 
 export default function RootLayout({
   children,

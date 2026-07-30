@@ -1,4 +1,4 @@
-// Seeds the database with the 9-sport Kejohanan Sukan 2026 championship.
+// Seeds the database with the 9-sport Pesta Sukan Antara Wilayah [PESAWI] Ke-13 championship.
 // Run with: npm run db:seed
 import { PrismaClient, MatchStatus, StreamPlatform } from "@prisma/client";
 
@@ -47,7 +47,29 @@ interface SportDef {
   icon: string;
   venues: string[];
   scoreStyle: ScoreStyle;
+  hasLineup?: boolean;
+  positions?: string[];
   divisions: { slug: string; name: string }[];
+}
+
+const FIRST_NAMES = [
+  "Ahmad", "Muhammad", "Amirul", "Farid", "Aiman", "Danish", "Haziq", "Iskandar",
+  "Adam", "Rayyan", "Zulhilmi", "Faris", "Naufal", "Hakim", "Syafiq", "Firdaus",
+  "Nurul", "Siti", "Aisyah", "Farah", "Nadia", "Alia", "Sofea", "Batrisyia",
+  "Aina", "Iman", "Qistina", "Damia", "Zara", "Elena",
+];
+const LAST_NAMES = [
+  "Rahman", "Yusof", "Osman", "Ibrahim", "Hassan", "Kassim", "Salleh", "Talib",
+  "Majid", "Latif", "Aziz", "Bakar", "Hamid", "Saad", "Idris", "Karim",
+];
+
+function randomName(usedNames: Set<string>) {
+  let name = "";
+  do {
+    name = `${FIRST_NAMES[randInt(0, FIRST_NAMES.length - 1)]} ${LAST_NAMES[randInt(0, LAST_NAMES.length - 1)]}`;
+  } while (usedNames.has(name));
+  usedNames.add(name);
+  return name;
 }
 
 const SPORT_DEFS: SportDef[] = [
@@ -89,6 +111,8 @@ const SPORT_DEFS: SportDef[] = [
     icon: "🏐",
     venues: ["Dewan Bola Tampar Universiti Malaysia Sabah"],
     scoreStyle: "sets5",
+    hasLineup: true,
+    positions: ["Pemukul Luar", "Pemukul Tengah", "Pengesan", "Penyangkak", "Libero"],
     divisions: [
       { slug: "lelaki", name: "Lelaki" },
       { slug: "wanita", name: "Wanita" },
@@ -124,6 +148,8 @@ const SPORT_DEFS: SportDef[] = [
     icon: "⚽",
     venues: ["Arena Futsal MBSA, Kota Kinabalu", "Arena Futsal Inanam"],
     scoreStyle: "goals",
+    hasLineup: true,
+    positions: ["Penjaga Gol", "Pertahanan", "Sayap", "Pivot"],
     divisions: [
       { slug: "lelaki", name: "Lelaki" },
       { slug: "veteran", name: "Veteran" },
@@ -240,7 +266,7 @@ async function main() {
   await prisma.eventSettings.create({
     data: {
       id: 1,
-      title: "Kejohanan Sukan 2026",
+      title: "Pesta Sukan Antara Wilayah [PESAWI] Ke-13",
       subtitle: "Kejohanan Sukan Antara Daerah Sabah",
       organizer: "Jawatankuasa Kejohanan Sukan Sabah 2026",
       startDate: new Date(TODAY),
@@ -262,6 +288,7 @@ async function main() {
         slug: sportDef.slug,
         name: sportDef.name,
         icon: sportDef.icon,
+        hasLineup: sportDef.hasLineup ?? false,
         order: sportOrder,
       },
     });
@@ -279,6 +306,7 @@ async function main() {
 
       const teamCount = 6;
       const createdTeams = [];
+      const teamPlayers = new Map<string, { id: string }[]>();
       for (let i = 0; i < teamCount; i++) {
         const [name, short] = DISTRICTS[(districtOffset + i) % DISTRICTS.length];
         teamColorSeq += 1;
@@ -291,6 +319,25 @@ async function main() {
           },
         });
         createdTeams.push(team);
+
+        if (sportDef.hasLineup) {
+          const usedNames = new Set<string>();
+          const rosterSize = 10;
+          const players = [];
+          for (let n = 1; n <= rosterSize; n++) {
+            const position = sportDef.positions?.[n % (sportDef.positions?.length ?? 1)];
+            const player = await prisma.player.create({
+              data: {
+                teamId: team.id,
+                name: randomName(usedNames),
+                jerseyNumber: n,
+                position,
+              },
+            });
+            players.push(player);
+          }
+          teamPlayers.set(team.id, players);
+        }
       }
       districtOffset += 3;
 
@@ -322,7 +369,7 @@ async function main() {
             minute = liveMinute(sportDef.scoreStyle);
           }
 
-          await prisma.match.create({
+          const match = await prisma.match.create({
             data: {
               divisionId: division.id,
               round: roundNumber,
@@ -337,6 +384,43 @@ async function main() {
               minute,
             },
           });
+
+          if (
+            sportDef.hasLineup &&
+            (status === MatchStatus.FINISHED || status === MatchStatus.LIVE)
+          ) {
+            const teamAPlayers = teamPlayers.get(createdTeams[ai].id) ?? [];
+            const teamBPlayers = teamPlayers.get(createdTeams[bi].id) ?? [];
+            const eventMinute = () =>
+              sportDef.scoreStyle === "goals"
+                ? `${randInt(1, 40)}'`
+                : `Set ${randInt(1, Math.max(scoreA + scoreB, 1))}`;
+
+            for (let g = 0; g < scoreA; g++) {
+              if (teamAPlayers.length === 0) break;
+              const scorer = teamAPlayers[randInt(0, teamAPlayers.length - 1)];
+              await prisma.matchEvent.create({
+                data: {
+                  matchId: match.id,
+                  teamId: createdTeams[ai].id,
+                  playerId: scorer.id,
+                  minute: eventMinute(),
+                },
+              });
+            }
+            for (let g = 0; g < scoreB; g++) {
+              if (teamBPlayers.length === 0) break;
+              const scorer = teamBPlayers[randInt(0, teamBPlayers.length - 1)];
+              await prisma.matchEvent.create({
+                data: {
+                  matchId: match.id,
+                  teamId: createdTeams[bi].id,
+                  playerId: scorer.id,
+                  minute: eventMinute(),
+                },
+              });
+            }
+          }
         }
       }
     }
@@ -361,15 +445,18 @@ async function main() {
     });
   }
 
-  const [sportCount, divisionCount, teamCount, matchCount, streamCount] = await Promise.all([
-    prisma.sport.count(),
-    prisma.division.count(),
-    prisma.team.count(),
-    prisma.match.count(),
-    prisma.streamLink.count(),
-  ]);
+  const [sportCount, divisionCount, teamCount, matchCount, streamCount, playerCount, eventCount] =
+    await Promise.all([
+      prisma.sport.count(),
+      prisma.division.count(),
+      prisma.team.count(),
+      prisma.match.count(),
+      prisma.streamLink.count(),
+      prisma.player.count(),
+      prisma.matchEvent.count(),
+    ]);
   console.log(
-    `Seeded ${sportCount} sports, ${divisionCount} divisions, ${teamCount} teams, ${matchCount} matches, ${streamCount} streams.`
+    `Seeded ${sportCount} sports, ${divisionCount} divisions, ${teamCount} teams, ${matchCount} matches, ${streamCount} streams, ${playerCount} players, ${eventCount} match events.`
   );
 }
 

@@ -105,7 +105,7 @@ export default function StreamSidebar({
                 </p>
                 <div className="space-y-2">
                   {live.map((m) => (
-                    <MatchCard key={m.id} match={m} />
+                    <MatchCard key={m.id} match={m} sportSlug={sportSlug} divisionSlug={divisionSlug} />
                   ))}
                 </div>
               </div>
@@ -118,7 +118,7 @@ export default function StreamSidebar({
                 </p>
                 <div className="space-y-2">
                   {upcoming.map((m) => (
-                    <MatchCard key={m.id} match={m} />
+                    <MatchCard key={m.id} match={m} sportSlug={sportSlug} divisionSlug={divisionSlug} />
                   ))}
                 </div>
               </div>
@@ -131,7 +131,7 @@ export default function StreamSidebar({
                 </p>
                 <div className="space-y-2">
                   {finished.map((m) => (
-                    <MatchCard key={m.id} match={m} />
+                    <MatchCard key={m.id} match={m} sportSlug={sportSlug} divisionSlug={divisionSlug} />
                   ))}
                 </div>
               </div>

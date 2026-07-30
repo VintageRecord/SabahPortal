@@ -1,7 +1,7 @@
-# Kejohanan Sukan 2026
+# Pesta Sukan Antara Wilayah [PESAWI] Ke-13
 
-A Sofascore-inspired live scoring portal for **Kejohanan Sukan 2026**, covering 9 sports played
-in a round-robin format:
+A Sofascore-inspired live scoring portal for **Pesta Sukan Antara Wilayah [PESAWI] Ke-13**,
+covering 9 sports played in a round-robin format:
 
 - Badminton (Berpasukan)
 - Sepak Takraw (Berpasukan)

@@ -19,6 +19,11 @@ const NAV_LINKS = [
   { href: "/strim", label: "Siaran Langsung" },
 ];
 
+function shortTitle(title: string) {
+  const match = title.match(/\[([^\]]+)\]\s*(.*)/);
+  return match ? `${match[1]} ${match[2]}`.trim() : title;
+}
+
 export default function Header({ sports, title }: { sports: SportNavItem[]; title: string }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sportsOpen, setSportsOpen] = useState(false);
@@ -39,10 +44,12 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
           <span className="glass flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 shadow-inner">
             <UiIcon name="trophy" size={18} />
           </span>
-          <span className="hidden text-base leading-tight tracking-tight sm:block">
+          <span className="hidden truncate text-base leading-tight tracking-tight sm:block sm:max-w-xs md:max-w-md">
             {title}
           </span>
-          <span className="text-base leading-tight tracking-tight sm:hidden">Sukan 2026</span>
+          <span className="truncate text-base leading-tight tracking-tight sm:hidden">
+            {shortTitle(title)}
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-1 text-sm font-medium md:flex">

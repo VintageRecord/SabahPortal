@@ -80,3 +80,30 @@ export async function getAllStreams() {
     orderBy: [{ isLive: "desc" }, { order: "asc" }],
   });
 }
+
+export async function getMatchDetail(matchId: string) {
+  const match = await prisma.match.findUnique({
+    where: { id: matchId },
+    include: {
+      teamA: true,
+      teamB: true,
+      division: { include: { sport: true } },
+      events: {
+        include: { player: true },
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  });
+  if (!match) return null;
+
+  if (!match.division.sport.hasLineup) {
+    return { match, teamAPlayers: [], teamBPlayers: [] };
+  }
+
+  const [teamAPlayers, teamBPlayers] = await Promise.all([
+    prisma.player.findMany({ where: { teamId: match.teamAId }, orderBy: { jerseyNumber: "asc" } }),
+    prisma.player.findMany({ where: { teamId: match.teamBId }, orderBy: { jerseyNumber: "asc" } }),
+  ]);
+
+  return { match, teamAPlayers, teamBPlayers };
+}

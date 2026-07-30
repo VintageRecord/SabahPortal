@@ -14,13 +14,20 @@ function hasSportContext(
 export default function MatchCard({
   match,
   showSport = false,
+  sportSlug,
+  divisionSlug,
 }: {
   match: MatchWithTeams | MatchWithTeamsAndDivision;
   showSport?: boolean;
+  sportSlug?: string;
+  divisionSlug?: string;
 }) {
   const isLive = match.status === "LIVE";
   const isFinished = match.status === "FINISHED";
   const showScore = isLive || isFinished;
+
+  const resolvedSportSlug = hasSportContext(match) ? match.division.sport.slug : sportSlug;
+  const resolvedDivisionSlug = hasSportContext(match) ? match.division.slug : divisionSlug;
 
   const content = (
     <div
@@ -89,6 +96,17 @@ export default function MatchCard({
       </div>
     </div>
   );
+
+  if ((isLive || isFinished) && resolvedSportSlug && resolvedDivisionSlug) {
+    return (
+      <Link
+        href={`/sukan/${resolvedSportSlug}/${resolvedDivisionSlug}/perlawanan/${match.id}`}
+        className="block"
+      >
+        {content}
+      </Link>
+    );
+  }
 
   if (hasSportContext(match)) {
     return (

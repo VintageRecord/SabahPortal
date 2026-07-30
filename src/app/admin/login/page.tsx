@@ -1,5 +1,6 @@
 import { loginAction } from "../auth-actions";
 import UiIcon from "@/components/icons/UiIcon";
+import { getSettings } from "@/lib/data";
 
 export default async function AdminLoginPage({
   searchParams,
@@ -9,6 +10,7 @@ export default async function AdminLoginPage({
   const params = await searchParams;
   const next = params.next ?? "/admin";
   const hasError = params.error === "1";
+  const settings = await getSettings();
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-slate-100 px-4 dark:bg-slate-950">
@@ -19,7 +21,7 @@ export default async function AdminLoginPage({
           </div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">Panel Admin</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Kejohanan Sukan 2026
+            {settings.title}
           </p>
         </div>
 
