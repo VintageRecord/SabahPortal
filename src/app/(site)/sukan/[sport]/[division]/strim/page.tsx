@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
-import { getDivision, getDivisionStreams } from "@/lib/data";
+import { getDivision, getDivisionMatches, getDivisionStreams, getSettings } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
 import StreamEmbed from "@/components/StreamEmbed";
+import StreamSidebar from "@/components/StreamSidebar";
 
 export default async function DivisionStreamPage({
   params,
@@ -10,8 +12,16 @@ export default async function DivisionStreamPage({
   const { sport: sportSlug, division: divisionSlug } = await params;
   const result = await getDivision(sportSlug, divisionSlug);
   if (!result) notFound();
+  const { sport, division } = result;
 
-  const streams = await getDivisionStreams(result.division.id);
+  const [streams, matches, settings, teamsCount] = await Promise.all([
+    getDivisionStreams(division.id),
+    getDivisionMatches(division.id),
+    getSettings(),
+    prisma.team.count({ where: { divisionId: division.id } }),
+  ]);
+
+  const venues = [...new Set(matches.map((m) => m.venue))];
 
   return (
     <div>
@@ -19,17 +29,34 @@ export default async function DivisionStreamPage({
         Siaran Langsung
       </h2>
 
-      {streams.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-slate-700">
-          Tiada pautan strim buat masa ini. Sila semak semula nanti.
-        </p>
-      ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {streams.map((stream) => (
-            <StreamEmbed key={stream.id} stream={stream} />
-          ))}
+      <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
+        <div className="space-y-4">
+          {streams.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-slate-700">
+              Tiada pautan strim buat masa ini. Sila semak semula nanti.
+            </p>
+          ) : (
+            streams.map((stream) => <StreamEmbed key={stream.id} stream={stream} />)
+          )}
         </div>
-      )}
+
+        <div className="lg:sticky lg:top-20 lg:self-start">
+          <StreamSidebar
+            sportSlug={sport.slug}
+            divisionSlug={division.slug}
+            divisionId={division.id}
+            initialMatches={matches}
+            sportName={sport.name}
+            divisionName={division.name}
+            format="Round-Robin"
+            teamsCount={teamsCount}
+            venues={venues}
+            pointsWin={settings.pointsWin}
+            pointsDraw={settings.pointsDraw}
+            pointsLoss={settings.pointsLoss}
+          />
+        </div>
+      </div>
     </div>
   );
 }
