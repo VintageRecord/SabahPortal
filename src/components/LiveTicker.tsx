@@ -30,8 +30,8 @@ export default function LiveTicker({
   if (matches.length === 0) return null;
 
   return (
-    <div className="border-b border-red-100 bg-red-50 dark:border-red-950 dark:bg-red-950/30">
-      <div className="mx-auto flex max-w-6xl items-stretch gap-3 overflow-x-auto px-3 py-2 sm:px-6">
+    <div className="border-b border-red-100 bg-gradient-to-r from-red-50 via-orange-50 to-red-50 dark:border-red-950 dark:from-red-950/30 dark:via-slate-950 dark:to-red-950/30">
+      <div className="mx-auto flex max-w-6xl items-stretch gap-3 overflow-x-auto px-3 py-2.5 sm:px-6">
         <div className="flex shrink-0 items-center gap-1.5 pr-2 text-xs font-bold text-red-600">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
@@ -43,13 +43,13 @@ export default function LiveTicker({
           <Link
             key={m.id}
             href={`/sukan/${m.division.sport.slug}/${m.division.slug}`}
-            className="flex shrink-0 flex-col justify-center rounded-lg bg-white px-3 py-1 text-xs shadow-sm dark:bg-slate-900"
+            className="flex shrink-0 flex-col justify-center rounded-xl border border-red-100/60 bg-white px-3 py-1.5 text-xs shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-red-950/60 dark:bg-slate-900"
           >
             <span className="mb-0.5 flex items-center gap-1 text-[10px] font-medium text-slate-400">
               <SportIcon slug={m.division.sport.slug} fallback={m.division.sport.icon} size={10} className="shrink-0" />
               {m.division.sport.name} · {m.division.name}
             </span>
-            <span className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
+            <span className="flex items-center gap-2 font-bold tabular-nums text-slate-800 dark:text-slate-100">
               {m.teamA.shortName} {m.scoreA} - {m.scoreB} {m.teamB.shortName}
             </span>
           </Link>

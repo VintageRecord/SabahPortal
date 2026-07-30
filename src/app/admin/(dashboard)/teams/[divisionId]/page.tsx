@@ -36,7 +36,7 @@ export default async function AdminDivisionTeamsPage({
       </h1>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+        <div className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <h2 className="mb-3 text-sm font-bold text-slate-700 dark:text-slate-200">
             Senarai Pasukan ({teams.length})
           </h2>
@@ -71,14 +71,14 @@ export default async function AdminDivisionTeamsPage({
                 />
                 <button
                   type="submit"
-                  className="rounded-lg bg-maroon-600 px-3 py-1 text-xs font-semibold text-white hover:bg-maroon-700"
+                  className="rounded-full bg-gradient-to-r from-maroon-600 to-maroon-500 px-3 py-1 text-xs font-semibold text-white shadow-sm transition hover:shadow-md"
                 >
                   Simpan
                 </button>
                 <button
                   type="submit"
                   formAction={deleteTeamAction}
-                  className="rounded-lg border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950"
+                  className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950"
                 >
                   Padam
                 </button>
@@ -110,7 +110,7 @@ export default async function AdminDivisionTeamsPage({
             />
             <button
               type="submit"
-              className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 dark:bg-maroon-600 dark:hover:bg-maroon-700"
+              className="rounded-full bg-gradient-to-r from-slate-800 to-slate-700 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:shadow-md dark:from-maroon-600 dark:to-maroon-500"
             >
               + Tambah Pasukan
             </button>

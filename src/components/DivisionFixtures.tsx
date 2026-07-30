@@ -73,7 +73,7 @@ export default function DivisionFixtures({
             onClick={() => setFilter(f.key)}
             className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
               filter === f.key
-                ? "bg-maroon-600 text-white"
+                ? "bg-gradient-to-r from-maroon-600 to-maroon-500 text-white shadow-sm shadow-maroon-200 dark:shadow-none"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
             }`}
           >

@@ -2,7 +2,7 @@ import { STATUS_LABEL } from "@/lib/format";
 
 export default function StatusPill({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    LIVE: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300",
+    LIVE: "bg-red-100 text-red-700 shadow-sm shadow-red-200 dark:bg-red-950 dark:text-red-300 dark:shadow-none",
     UPCOMING: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
     FINISHED: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
     POSTPONED: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",

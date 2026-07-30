@@ -20,17 +20,17 @@ export default function DivisionTabs({
   ];
 
   return (
-    <div className="flex gap-1 border-b border-slate-200 dark:border-slate-800">
+    <div className="inline-flex gap-1 rounded-full bg-slate-100 p-1 dark:bg-slate-800/70">
       {tabs.map((tab) => {
         const active = tab.exact ? pathname === tab.href : pathname.startsWith(tab.href);
         return (
           <Link
             key={tab.href}
             href={tab.href}
-            className={`border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
+            className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
               active
-                ? "border-maroon-600 text-maroon-600"
-                : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                ? "bg-white text-maroon-600 shadow-sm dark:bg-slate-950 dark:text-maroon-400"
+                : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
             }`}
           >
             {tab.label}

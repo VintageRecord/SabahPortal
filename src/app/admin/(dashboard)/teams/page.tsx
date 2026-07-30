@@ -16,7 +16,7 @@ export default async function AdminTeamsIndexPage() {
         {sports.map((sport) => (
           <div
             key={sport.id}
-            className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+            className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
           >
             <p className="mb-2 flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
               <SportIcon slug={sport.slug} fallback={sport.icon} size={16} /> {sport.name}

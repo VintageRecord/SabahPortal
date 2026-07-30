@@ -12,7 +12,7 @@ export default async function StreamsPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-      <h1 className="mb-1 text-2xl font-bold text-slate-800 dark:text-slate-100">
+      <h1 className="mb-1 text-2xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
         Siaran Langsung
       </h1>
       <p className="mb-6 text-sm text-slate-500">
@@ -62,7 +62,7 @@ export default async function StreamsPage() {
                 {otherStreams.map((stream) => (
                   <div
                     key={stream.id}
-                    className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-maroon-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+                    className="flex flex-col gap-3 rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-transparent hover:shadow-xl hover:shadow-maroon-900/10 dark:border-slate-800 dark:bg-slate-900"
                   >
                     <a
                       href={stream.url}
@@ -70,7 +70,7 @@ export default async function StreamsPage() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-3"
                     >
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700">
                         <PlatformIcon platform={stream.platform} size={18} />
                       </span>
                       <div className="min-w-0 flex-1">

@@ -45,7 +45,7 @@ export default async function AdminLoginPage({
           </div>
           <button
             type="submit"
-            className="w-full rounded-lg bg-maroon-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-maroon-700"
+            className="w-full rounded-full bg-gradient-to-r from-maroon-600 to-maroon-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:shadow-md"
           >
             Log Masuk
           </button>

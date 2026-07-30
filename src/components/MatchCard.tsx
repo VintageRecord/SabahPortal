@@ -24,10 +24,10 @@ export default function MatchCard({
 
   const content = (
     <div
-      className={`rounded-xl border p-3 transition hover:shadow-md sm:p-4 ${
+      className={`rounded-2xl border p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg sm:p-4 ${
         isLive
-          ? "border-red-200 bg-red-50/50 dark:border-red-900 dark:bg-red-950/20"
-          : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+          ? "border-red-200 bg-gradient-to-br from-red-50 to-white shadow-red-100 dark:border-red-900/60 dark:from-red-950/30 dark:to-slate-900 dark:shadow-none"
+          : "border-slate-200/70 bg-white hover:border-slate-200 dark:border-slate-800 dark:bg-slate-900"
       }`}
     >
       <div className="mb-2 flex items-center justify-between gap-2">
@@ -64,7 +64,7 @@ export default function MatchCard({
             </span>
           </div>
           {showScore && (
-            <span className={`shrink-0 text-sm font-bold ${isLive ? "text-red-600" : "text-slate-700 dark:text-slate-200"}`}>
+            <span className={`shrink-0 text-base font-extrabold tabular-nums ${isLive ? "text-red-600" : "text-slate-700 dark:text-slate-200"}`}>
               {match.scoreA}
             </span>
           )}
@@ -77,7 +77,7 @@ export default function MatchCard({
             </span>
           </div>
           {showScore && (
-            <span className={`shrink-0 text-sm font-bold ${isLive ? "text-red-600" : "text-slate-700 dark:text-slate-200"}`}>
+            <span className={`shrink-0 text-base font-extrabold tabular-nums ${isLive ? "text-red-600" : "text-slate-700 dark:text-slate-200"}`}>
               {match.scoreB}
             </span>
           )}

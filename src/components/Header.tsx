@@ -24,16 +24,24 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-maroon-900/20 bg-maroon-700 text-white shadow-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-3 py-3 sm:px-6">
-        <Link href="/" className="flex items-center gap-2 font-bold" onClick={() => setMenuOpen(false)}>
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 text-lg">
+    <header className="sticky top-0 z-40 overflow-hidden border-b border-white/10 bg-gradient-to-r from-maroon-900 via-maroon-700 to-maroon-800 text-white shadow-lg shadow-maroon-950/20">
+      <div
+        className="pointer-events-none absolute -left-10 -top-16 h-40 w-40 rounded-full bg-amber-400/20 blur-3xl"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -right-10 -top-20 h-48 w-48 rounded-full bg-pink-500/20 blur-3xl"
+        aria-hidden="true"
+      />
+      <div className="relative mx-auto flex max-w-6xl items-center justify-between px-3 py-3 sm:px-6">
+        <Link href="/" className="flex items-center gap-2.5 font-bold" onClick={() => setMenuOpen(false)}>
+          <span className="glass flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 text-lg shadow-inner">
             🏆
           </span>
-          <span className="hidden text-base leading-tight sm:block">
+          <span className="hidden text-base leading-tight tracking-tight sm:block">
             {title}
           </span>
-          <span className="text-base leading-tight sm:hidden">Sukan 2026</span>
+          <span className="text-base leading-tight tracking-tight sm:hidden">Sukan 2026</span>
         </Link>
 
         <nav className="hidden items-center gap-1 text-sm font-medium md:flex">
@@ -41,8 +49,8 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
             <Link
               key={link.href}
               href={link.href}
-              className={`rounded-lg px-3 py-2 transition hover:bg-white/10 ${
-                pathname === link.href ? "bg-white/15" : ""
+              className={`rounded-full px-4 py-2 transition ${
+                pathname === link.href ? "glass shadow-sm" : "hover:bg-white/10"
               }`}
             >
               {link.label}
@@ -53,22 +61,22 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
             <button
               onClick={() => setSportsOpen((v) => !v)}
               onBlur={() => setTimeout(() => setSportsOpen(false), 150)}
-              className={`flex items-center gap-1 rounded-lg px-3 py-2 transition hover:bg-white/10 ${
-                pathname.startsWith("/sukan") ? "bg-white/15" : ""
+              className={`flex items-center gap-1 rounded-full px-4 py-2 transition ${
+                pathname.startsWith("/sukan") ? "glass shadow-sm" : "hover:bg-white/10"
               }`}
             >
               Sukan
-              <span className="text-xs">{sportsOpen ? "▲" : "▼"}</span>
+              <span className={`text-xs transition-transform ${sportsOpen ? "rotate-180" : ""}`}>▼</span>
             </button>
             {sportsOpen && (
-              <div className="absolute right-0 top-full mt-2 grid w-72 grid-cols-1 gap-0.5 rounded-xl bg-white p-2 text-slate-700 shadow-xl">
+              <div className="absolute right-0 top-full mt-2 grid w-72 grid-cols-1 gap-0.5 rounded-2xl border border-slate-100 bg-white/95 p-2 text-slate-700 shadow-2xl backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 dark:text-slate-100">
                 {sports.map((sport) => (
                   <Link
                     key={sport.slug}
                     href={`/sukan/${sport.slug}`}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-slate-100"
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition hover:bg-maroon-50 dark:hover:bg-slate-800"
                   >
-                    <SportIcon slug={sport.slug} fallback={sport.icon} size={16} className="shrink-0" />
+                    <SportIcon slug={sport.slug} fallback={sport.icon} size={16} className="shrink-0 text-maroon-600 dark:text-maroon-400" />
                     <span className="flex-1">{sport.name}</span>
                     {sport.divisions.length > 1 && (
                       <span className="text-[11px] text-slate-400">
@@ -83,7 +91,7 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
         </nav>
 
         <button
-          className="rounded-lg p-2 hover:bg-white/10 md:hidden"
+          className="relative rounded-full p-2 hover:bg-white/10 md:hidden"
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Buka menu"
         >
@@ -100,14 +108,14 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
       </div>
 
       {menuOpen && (
-        <div className="border-t border-white/10 bg-maroon-700 md:hidden">
+        <div className="relative border-t border-white/10 bg-maroon-800/95 backdrop-blur-md md:hidden">
           <div className="max-h-[75vh] overflow-y-auto px-3 py-2">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="block rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-white/10"
+                className="block rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-white/10"
               >
                 {link.label}
               </Link>
@@ -121,7 +129,7 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
                   key={sport.slug}
                   href={`/sukan/${sport.slug}`}
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm hover:bg-white/10"
+                  className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm hover:bg-white/10"
                 >
                   <SportIcon slug={sport.slug} fallback={sport.icon} size={16} className="shrink-0" />
                   <span className="flex-1">{sport.name}</span>

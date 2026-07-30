@@ -31,7 +31,7 @@ export default async function AdminStreamsPage() {
           <form
             key={stream.id}
             action={updateStreamAction}
-            className="grid grid-cols-1 gap-2 rounded-xl border border-slate-200 bg-white p-4 sm:grid-cols-6 sm:items-center dark:border-slate-800 dark:bg-slate-900"
+            className="grid grid-cols-1 gap-2 rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm sm:grid-cols-6 sm:items-center dark:border-slate-800 dark:bg-slate-900"
           >
             <input type="hidden" name="streamId" value={stream.id} />
             <select
@@ -77,14 +77,14 @@ export default async function AdminStreamsPage() {
               </label>
               <button
                 type="submit"
-                className="rounded-lg bg-maroon-600 px-3 py-1 text-xs font-semibold text-white hover:bg-maroon-700"
+                className="rounded-full bg-gradient-to-r from-maroon-600 to-maroon-500 px-3 py-1 text-xs font-semibold text-white shadow-sm transition hover:shadow-md"
               >
                 Simpan
               </button>
               <button
                 type="submit"
                 formAction={deleteStreamAction}
-                className="rounded-lg border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 dark:border-red-900"
+                className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-900"
               >
                 Padam
               </button>
@@ -145,7 +145,7 @@ export default async function AdminStreamsPage() {
           </label>
           <button
             type="submit"
-            className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 dark:bg-maroon-600 dark:hover:bg-maroon-700"
+            className="rounded-full bg-gradient-to-r from-slate-800 to-slate-700 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:shadow-md dark:from-maroon-600 dark:to-maroon-500"
           >
             + Tambah
           </button>

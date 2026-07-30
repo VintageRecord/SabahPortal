@@ -104,7 +104,7 @@ export default async function AdminSettingsPage() {
 
         <button
           type="submit"
-          className="rounded-lg bg-maroon-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-maroon-700"
+          className="rounded-full bg-gradient-to-r from-maroon-600 to-maroon-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:shadow-md"
         >
           Simpan Tetapan
         </button>

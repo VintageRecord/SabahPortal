@@ -49,7 +49,7 @@ export default async function AdminDivisionMatchesPage({
         {matches.map((match) => (
           <div
             key={match.id}
-            className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+            className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
           >
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs font-semibold text-slate-400">
@@ -176,7 +176,7 @@ export default async function AdminDivisionMatchesPage({
                   <div className="col-span-2 flex items-end sm:col-span-4">
                     <button
                       type="submit"
-                      className="rounded-lg bg-maroon-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-maroon-700"
+                      className="rounded-full bg-gradient-to-r from-maroon-600 to-maroon-500 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:shadow-md"
                     >
                       Simpan Perubahan
                     </button>

@@ -20,7 +20,9 @@ export default async function DivisionLayout({
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
       <div className="mb-1 flex items-center gap-3">
-        <SportIcon slug={sport.slug} fallback={sport.icon} size={32} className="text-maroon-700 dark:text-maroon-400" />
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-maroon-50 to-maroon-100 text-maroon-700 shadow-sm dark:from-maroon-950 dark:to-maroon-900 dark:text-maroon-400">
+          <SportIcon slug={sport.slug} fallback={sport.icon} size={30} />
+        </span>
         <div>
           <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 sm:text-2xl">
             {sport.name}
@@ -37,7 +39,7 @@ export default async function DivisionLayout({
               href={`/sukan/${sport.slug}/${d.slug}`}
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
                 d.slug === divisionSlug
-                  ? "bg-maroon-600 text-white"
+                  ? "bg-gradient-to-r from-maroon-600 to-maroon-500 text-white shadow-sm shadow-maroon-200 dark:shadow-none"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
               }`}
             >

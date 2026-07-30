@@ -22,11 +22,11 @@ export default function StreamEmbed({ stream }: { stream: StreamEmbedData }) {
         : null;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+    <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-3 dark:border-slate-800">
         <div className="flex min-w-0 items-center gap-2">
           <span
-            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-white ${PLATFORM_COLOR[stream.platform]}`}
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white shadow-sm ${PLATFORM_COLOR[stream.platform]}`}
           >
             <PlatformIcon platform={stream.platform} size={16} />
           </span>
@@ -38,7 +38,7 @@ export default function StreamEmbed({ stream }: { stream: StreamEmbedData }) {
           </div>
         </div>
         {stream.isLive && (
-          <span className="flex shrink-0 items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-bold text-red-700 dark:bg-red-950 dark:text-red-300">
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-bold text-red-700 shadow-sm shadow-red-200 dark:bg-red-950 dark:text-red-300 dark:shadow-none">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-600" />
             LANGSUNG
           </span>
@@ -60,10 +60,10 @@ export default function StreamEmbed({ stream }: { stream: StreamEmbedData }) {
           href={stream.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex aspect-video w-full flex-col items-center justify-center gap-3 bg-slate-50 px-6 text-center transition hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-800/70"
+          className="flex aspect-video w-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 to-slate-100 px-6 text-center transition hover:from-slate-100 hover:to-slate-200 dark:from-slate-800 dark:to-slate-900 dark:hover:from-slate-800/70"
         >
           <span
-            className={`flex h-12 w-12 items-center justify-center rounded-full text-white ${PLATFORM_COLOR[stream.platform]}`}
+            className={`flex h-12 w-12 items-center justify-center rounded-full text-white shadow-lg ${PLATFORM_COLOR[stream.platform]}`}
           >
             <PlatformIcon platform={stream.platform} size={22} />
           </span>
