@@ -92,3 +92,34 @@ immediately everywhere.
   PostgreSQL on every request via Prisma and uses Next.js Server Actions for admin mutations.
 - Live scores refresh on the public site via lightweight polling (`/api/live`,
   `/api/matches?divisionId=...`) every 10 seconds — no websocket infrastructure required.
+
+## Deploying to Railway
+
+This repo includes a `railway.toml` and a `postinstall` script (`prisma generate`), so Railway's
+Nixpacks builder can deploy it with no extra configuration beyond environment variables.
+
+1. **Create a project** at [railway.app](https://railway.app) → "New Project" → "Deploy from
+   GitHub repo" → pick this repository and the branch you want to deploy.
+2. **Add PostgreSQL**: in the same project, click "New" → "Database" → "Add PostgreSQL". Railway
+   provisions it and exposes its own `DATABASE_URL` variable automatically.
+3. **Set environment variables** on the *app* service (Variables tab):
+   - `DATABASE_URL` — click "Add Reference" and point it at the Postgres service's `DATABASE_URL`
+     (so it always stays in sync if Railway ever rotates credentials), instead of pasting it in
+     as plain text.
+   - `ADMIN_PASSWORD` — choose a real password for `/admin`.
+   - `SESSION_SECRET` — any long random string (e.g. generate one with `openssl rand -hex 32`).
+4. **Deploy**. Railway runs `npm install` (which triggers `prisma generate` via `postinstall`),
+   then `npm run build`, then the configured start command:
+   `npx prisma migrate deploy && npm run start` — this applies any pending migrations before the
+   server boots, every time you deploy. It's safe to run repeatedly since `migrate deploy` only
+   applies migrations that haven't run yet.
+5. **Seed the initial data** (one-time, after the first successful deploy): open a shell against
+   the deployed service — either via the Railway CLI (`railway link` then `railway run npm run
+   db:seed`) or the "Run Command" option in the service's dashboard. **Do not** re-run this later;
+   it wipes and regenerates all sports/teams/matches, which would erase real results entered
+   through the admin panel.
+6. **Custom domain** (optional): Settings → Networking → "Custom Domain" on the app service, then
+   add the CNAME record it gives you at your DNS provider.
+
+After that, the public site and `/admin` panel are live at the Railway-provided URL (or your
+custom domain). Every subsequent `git push` to the connected branch auto-deploys.
