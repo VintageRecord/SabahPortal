@@ -233,19 +233,8 @@ function liveMinute(style: ScoreStyle) {
   }
 }
 
-const STREAM_SEED: {
-  sportSlug: string;
-  divSlug: string;
-  platform: StreamPlatform;
-  title: string;
-  url: string;
-  isLive: boolean;
-}[] = [
-  { sportSlug: "futsal", divSlug: "lelaki", platform: "YOUTUBE", title: "Live YouTube - Futsal Lelaki", url: "https://www.youtube.com/watch?v=jNQXAC9IVRw", isLive: true },
-  { sportSlug: "futsal", divSlug: "wanita", platform: "TIKTOK", title: "Live TikTok - Futsal Wanita", url: "https://www.tiktok.com/@sabahsukan", isLive: false },
-  { sportSlug: "badminton", divSlug: "berpasukan", platform: "FACEBOOK", title: "Live Facebook - Badminton", url: "https://www.facebook.com/SabahSukan", isLive: false },
-  { sportSlug: "bola-tampar", divSlug: "lelaki", platform: "YOUTUBE", title: "Live YouTube - Bola Tampar Lelaki", url: "https://www.youtube.com/watch?v=jNQXAC9IVRw", isLive: true },
-];
+const PLACEHOLDER_YOUTUBE_URL = "https://www.youtube.com/watch?v=TVpSVuUK3aY";
+const NON_LIVE_PLATFORMS: StreamPlatform[] = ["YOUTUBE", "TIKTOK", "FACEBOOK", "INSTAGRAM"];
 
 const ROUND1_SLOTS: { time: string; status: MatchStatus }[] = [
   { time: "08:30", status: MatchStatus.FINISHED },
@@ -280,6 +269,14 @@ async function main() {
   let districtOffset = 0;
   let teamColorSeq = 0;
   let sportOrder = 0;
+  const liveDivisionIds = new Set<string>();
+  const allDivisions: {
+    id: string;
+    sportSlug: string;
+    sportName: string;
+    divSlug: string;
+    divName: string;
+  }[] = [];
 
   for (const sportDef of SPORT_DEFS) {
     sportOrder += 1;
@@ -302,6 +299,13 @@ async function main() {
           format: "round-robin",
           order: divIdx + 1,
         },
+      });
+      allDivisions.push({
+        id: division.id,
+        sportSlug: sportDef.slug,
+        sportName: sportDef.name,
+        divSlug: divDef.slug,
+        divName: divDef.name,
       });
 
       const teamCount = 6;
@@ -385,6 +389,10 @@ async function main() {
             },
           });
 
+          if (status === MatchStatus.LIVE) {
+            liveDivisionIds.add(division.id);
+          }
+
           if (
             sportDef.hasLineup &&
             (status === MatchStatus.FINISHED || status === MatchStatus.LIVE)
@@ -426,20 +434,37 @@ async function main() {
     }
   }
 
+  const PLATFORM_LABEL: Record<StreamPlatform, string> = {
+    YOUTUBE: "YouTube",
+    TIKTOK: "TikTok",
+    FACEBOOK: "Facebook",
+    INSTAGRAM: "Instagram",
+    OTHER: "Lain-lain",
+  };
+  const PLATFORM_URL: Record<StreamPlatform, string> = {
+    YOUTUBE: PLACEHOLDER_YOUTUBE_URL,
+    TIKTOK: "https://www.tiktok.com/@sabahsukan",
+    FACEBOOK: "https://www.facebook.com/SabahSukan",
+    INSTAGRAM: "https://www.instagram.com/sabahsukan",
+    OTHER: PLACEHOLDER_YOUTUBE_URL,
+  };
+
+  // Every division gets a stream link so its Strim tab always has something to show.
+  // Divisions with a match currently LIVE always get a real, embeddable YouTube link.
   let streamOrder = 0;
-  for (const s of STREAM_SEED) {
-    const sport = await prisma.sport.findUniqueOrThrow({ where: { slug: s.sportSlug } });
-    const division = await prisma.division.findFirstOrThrow({
-      where: { sportId: sport.id, slug: s.divSlug },
-    });
+  for (const [idx, div] of allDivisions.entries()) {
+    const isLive = liveDivisionIds.has(div.id);
+    const platform: StreamPlatform = isLive
+      ? "YOUTUBE"
+      : NON_LIVE_PLATFORMS[idx % NON_LIVE_PLATFORMS.length];
     streamOrder += 1;
     await prisma.streamLink.create({
       data: {
-        divisionId: division.id,
-        platform: s.platform,
-        title: s.title,
-        url: s.url,
-        isLive: s.isLive,
+        divisionId: div.id,
+        platform,
+        title: `${PLATFORM_LABEL[platform]} - ${div.sportName} ${div.divName}`,
+        url: PLATFORM_URL[platform],
+        isLive,
         order: streamOrder,
       },
     });
