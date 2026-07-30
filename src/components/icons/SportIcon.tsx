@@ -83,10 +83,27 @@ export default function SportIcon({
 }) {
   const icon = ICONS[slug];
   if (!icon) {
+    if (fallback) {
+      return (
+        <span className={className} style={{ fontSize: size, lineHeight: 1 }}>
+          {fallback}
+        </span>
+      );
+    }
     return (
-      <span className={className} style={{ fontSize: size, lineHeight: 1 }}>
-        {fallback ?? "🏅"}
-      </span>
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        className={className}
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="15" r="5.5" />
+        <path d="m9 4-3 7.5M15 4l3 7.5M9 4h6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
     );
   }
 

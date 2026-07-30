@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SportIcon from "./icons/SportIcon";
+import UiIcon from "./icons/UiIcon";
 
 interface SportNavItem {
   slug: string;
@@ -35,8 +36,8 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
       />
       <div className="relative mx-auto flex max-w-6xl items-center justify-between px-3 py-3 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5 font-bold" onClick={() => setMenuOpen(false)}>
-          <span className="glass flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 text-lg shadow-inner">
-            🏆
+          <span className="glass flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 shadow-inner">
+            <UiIcon name="trophy" size={18} />
           </span>
           <span className="hidden text-base leading-tight tracking-tight sm:block">
             {title}

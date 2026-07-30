@@ -33,11 +33,3 @@ export const PLATFORM_LABEL: Record<string, string> = {
   INSTAGRAM: "Instagram",
   OTHER: "Lain-lain",
 };
-
-export const PLATFORM_ICON: Record<string, string> = {
-  YOUTUBE: "▶️",
-  TIKTOK: "🎵",
-  FACEBOOK: "📘",
-  INSTAGRAM: "📸",
-  OTHER: "🔗",
-};

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import UiIcon from "@/components/icons/UiIcon";
 
 export default async function AdminDashboardPage() {
   const [sportCount, divisionCount, teamCount, matchCount, liveCount, streamCount] =
@@ -46,7 +47,7 @@ export default async function AdminDashboardPage() {
           href="/admin/matches"
           className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
         >
-          <p className="mb-1 text-lg">⚡</p>
+          <UiIcon name="bolt" size={22} className="mb-2 text-maroon-600" />
           <p className="font-semibold text-slate-800 dark:text-slate-100">Kemas kini skor</p>
           <p className="mt-1 text-xs text-slate-500">
             Tukar status ke Langsung dan kemas kini skor masa nyata.
@@ -56,7 +57,7 @@ export default async function AdminDashboardPage() {
           href="/admin/teams"
           className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
         >
-          <p className="mb-1 text-lg">👥</p>
+          <UiIcon name="users" size={22} className="mb-2 text-maroon-600" />
           <p className="font-semibold text-slate-800 dark:text-slate-100">Urus pasukan</p>
           <p className="mt-1 text-xs text-slate-500">
             Tambah/edit pasukan dan jana semula jadual round-robin.
@@ -66,7 +67,7 @@ export default async function AdminDashboardPage() {
           href="/admin/settings"
           className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
         >
-          <p className="mb-1 text-lg">⚙️</p>
+          <UiIcon name="gear" size={22} className="mb-2 text-maroon-600" />
           <p className="font-semibold text-slate-800 dark:text-slate-100">Tetapan kejohanan</p>
           <p className="mt-1 text-xs text-slate-500">
             Nama, tarikh dan sistem mata (menang/seri/kalah).

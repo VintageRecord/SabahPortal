@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSettings } from "@/lib/data";
 import { logoutAction } from "../auth-actions";
 import AdminNav from "./AdminNav";
+import UiIcon from "@/components/icons/UiIcon";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
@@ -12,7 +13,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-maroon-600 to-maroon-800 text-white shadow-sm">
-              🏆
+              <UiIcon name="trophy" size={18} />
             </span>
             <div>
               <p className="text-sm font-bold leading-tight text-slate-800 dark:text-slate-100">

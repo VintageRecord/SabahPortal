@@ -1,4 +1,5 @@
 import { loginAction } from "../auth-actions";
+import UiIcon from "@/components/icons/UiIcon";
 
 export default async function AdminLoginPage({
   searchParams,
@@ -13,8 +14,8 @@ export default async function AdminLoginPage({
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-slate-100 px-4 dark:bg-slate-950">
       <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg dark:bg-slate-900">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-maroon-600 text-2xl text-white">
-            🏆
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-maroon-600 to-maroon-800 text-white">
+            <UiIcon name="trophy" size={22} />
           </div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">Panel Admin</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">

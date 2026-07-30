@@ -41,7 +41,7 @@ export default async function AdminStreamsPage() {
             >
               {divisions.map((d) => (
                 <option key={d.id} value={d.id}>
-                  {d.sport.icon} {d.sport.name} · {d.name}
+                  {d.sport.name} · {d.name}
                 </option>
               ))}
             </select>
@@ -110,7 +110,7 @@ export default async function AdminStreamsPage() {
           <option value="">Pilih bahagian...</option>
           {divisions.map((d) => (
             <option key={d.id} value={d.id}>
-              {d.sport.icon} {d.sport.name} · {d.name}
+              {d.sport.name} · {d.name}
             </option>
           ))}
         </select>

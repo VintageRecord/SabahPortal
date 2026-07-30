@@ -2,6 +2,7 @@ import Link from "next/link";
 import LiveTicker from "@/components/LiveTicker";
 import MatchCard from "@/components/MatchCard";
 import SportIcon from "@/components/icons/SportIcon";
+import UiIcon from "@/components/icons/UiIcon";
 import { getLiveMatches, getMatchesByDate, getSettings, getSports } from "@/lib/data";
 import { formatDateLong, toDateKey } from "@/lib/format";
 
@@ -49,11 +50,16 @@ export default async function HomePage() {
           </h1>
           <p className="mt-3 max-w-xl text-base text-maroon-100 sm:text-lg">{settings.subtitle}</p>
           <div className="mt-5 flex flex-wrap gap-2.5 text-sm text-white">
-            <span className="glass rounded-full border border-white/20 px-3.5 py-1.5 shadow-sm">
-              📅 {formatDateLong(settings.startDate)} — {formatDateLong(settings.endDate)}
+            <span className="glass flex items-center gap-1.5 rounded-full border border-white/20 px-3.5 py-1.5 shadow-sm">
+              <UiIcon name="calendar" size={14} />
+              {formatDateLong(settings.startDate)} — {formatDateLong(settings.endDate)}
             </span>
-            <span className="glass rounded-full border border-white/20 px-3.5 py-1.5 shadow-sm">🏅 9 Sukan</span>
-            <span className="glass rounded-full border border-white/20 px-3.5 py-1.5 shadow-sm">🔄 Format Round-Robin</span>
+            <span className="glass flex items-center gap-1.5 rounded-full border border-white/20 px-3.5 py-1.5 shadow-sm">
+              <UiIcon name="medal" size={14} />9 Sukan
+            </span>
+            <span className="glass flex items-center gap-1.5 rounded-full border border-white/20 px-3.5 py-1.5 shadow-sm">
+              <UiIcon name="refresh" size={14} />Format Round-Robin
+            </span>
           </div>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
