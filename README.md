@@ -42,6 +42,8 @@ Everything seeded in the database (sports, teams, venues, times) can be changed 
    ```
 
    - `DATABASE_URL` — PostgreSQL connection string.
+   - `DIRECT_URL` — same as `DATABASE_URL` for a plain Postgres instance (only differs from
+     `DATABASE_URL` when using a pooled provider like Neon — see the Vercel deployment section).
    - `ADMIN_PASSWORD` — password for `/admin`.
    - `SESSION_SECRET` — random string used to sign the admin session cookie.
 
@@ -93,7 +95,45 @@ immediately everywhere.
 - Live scores refresh on the public site via lightweight polling (`/api/live`,
   `/api/matches?divisionId=...`) every 10 seconds — no websocket infrastructure required.
 
-## Deploying to Railway
+## Deploying to Vercel + Neon (recommended, free forever)
+
+Vercel's Hobby plan and Neon's free Postgres tier are both free indefinitely (no trial expiry),
+which is why this is the default recommendation. The schema uses Prisma's `directUrl` so
+migrations run over Neon's unpooled connection while the app itself uses the pooled one — needed
+because Vercel functions can open many concurrent connections, which a normal Postgres connection
+limit can't handle.
+
+1. **Create a Neon project** at [neon.tech](https://neon.tech) (free, no credit card required).
+   In its dashboard's "Connect" panel, copy both connection strings it gives you:
+   - **Pooled connection** (hostname contains `-pooler`) → this is `DATABASE_URL`.
+   - **Direct connection** (no `-pooler`) → this is `DIRECT_URL`.
+2. **Import the project** at [vercel.com](https://vercel.com) → "Add New" → "Project" → select
+   this GitHub repo and branch. Vercel auto-detects Next.js; no build settings need changing
+   (it automatically runs the `vercel-build` script already defined in `package.json`, which does
+   `prisma migrate deploy` before `next build`).
+3. **Set environment variables** in the project's Settings → Environment Variables:
+   - `DATABASE_URL` — the pooled Neon connection string.
+   - `DIRECT_URL` — the direct Neon connection string.
+   - `ADMIN_PASSWORD` — a real password for `/admin`.
+   - `SESSION_SECRET` — any long random string (e.g. `openssl rand -hex 32`).
+4. **Deploy.** Vercel builds it, running the pending migration automatically as part of the build.
+5. **Seed the initial data** (one-time): Vercel doesn't offer a remote shell, so run the seed
+   script from your own machine pointed at the production database instead — it connects to
+   Neon directly over the network:
+
+   ```bash
+   DATABASE_URL="<paste the same pooled connection string>" npm run db:seed
+   ```
+
+   **Do not** run this again later — it wipes and regenerates all sports/teams/matches, erasing
+   any real results entered through the admin panel.
+6. **Custom domain** (optional): Settings → Domains on the Vercel project, then add the DNS
+   record it gives you at your provider.
+
+Every subsequent `git push` to the connected branch auto-deploys, running migrations again each
+time (safe — `migrate deploy` only applies migrations that haven't run yet).
+
+## Deploying to Railway (alternative)
 
 This repo includes a `railway.toml` and a `postinstall` script (`prisma generate`), so Railway's
 Nixpacks builder can deploy it with no extra configuration beyond environment variables.
@@ -103,9 +143,10 @@ Nixpacks builder can deploy it with no extra configuration beyond environment va
 2. **Add PostgreSQL**: in the same project, click "New" → "Database" → "Add PostgreSQL". Railway
    provisions it and exposes its own `DATABASE_URL` variable automatically.
 3. **Set environment variables** on the *app* service (Variables tab):
-   - `DATABASE_URL` — click "Add Reference" and point it at the Postgres service's `DATABASE_URL`
-     (so it always stays in sync if Railway ever rotates credentials), instead of pasting it in
-     as plain text.
+   - `DATABASE_URL` and `DIRECT_URL` — both as "Add Reference" pointing at the Postgres service's
+     `DATABASE_URL` (Railway's Postgres isn't pooled, so both variables use the same value; using
+     a reference instead of pasting it in as plain text keeps it in sync if Railway ever rotates
+     credentials).
    - `ADMIN_PASSWORD` — choose a real password for `/admin`.
    - `SESSION_SECRET` — any long random string (e.g. generate one with `openssl rand -hex 32`).
 4. **Deploy**. Railway runs `npm install` (which triggers `prisma generate` via `postinstall`),
