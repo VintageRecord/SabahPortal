@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSportBySlug } from "@/lib/data";
 import DivisionTabs from "@/components/DivisionTabs";
+import SportIcon from "@/components/icons/SportIcon";
 
 export default async function DivisionLayout({
   children,
@@ -19,7 +20,7 @@ export default async function DivisionLayout({
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
       <div className="mb-1 flex items-center gap-3">
-        <span className="text-3xl">{sport.icon}</span>
+        <SportIcon slug={sport.slug} fallback={sport.icon} size={32} className="text-maroon-700 dark:text-maroon-400" />
         <div>
           <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 sm:text-2xl">
             {sport.name}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
 import StatusPill from "@/components/StatusPill";
+import SportIcon from "@/components/icons/SportIcon";
 import { toDateKey } from "@/lib/format";
 import { adjustScoreAction, setMatchStatusAction, updateMatchDetailsAction } from "./actions";
 
@@ -32,7 +33,7 @@ export default async function AdminDivisionMatchesPage({
             ← Semua sukan
           </Link>
           <h1 className="mt-1 flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-100">
-            <span>{division.sport.icon}</span> {division.sport.name} · {division.name}
+            <SportIcon slug={division.sport.slug} fallback={division.sport.icon} size={20} /> {division.sport.name} · {division.name}
           </h1>
         </div>
         <Link

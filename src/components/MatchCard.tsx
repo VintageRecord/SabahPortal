@@ -1,6 +1,7 @@
 import Link from "next/link";
 import TeamBadge from "./TeamBadge";
 import StatusPill from "./StatusPill";
+import SportIcon from "./icons/SportIcon";
 import { formatDateShort } from "@/lib/format";
 import type { MatchWithTeams, MatchWithTeamsAndDivision } from "@/lib/types";
 
@@ -33,7 +34,7 @@ export default function MatchCard({
         <div className="flex min-w-0 items-center gap-1.5">
           {showSport && hasSportContext(match) && (
             <span className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-maroon-600 dark:text-maroon-400">
-              <span>{match.division.sport.icon}</span>
+              <SportIcon slug={match.division.sport.slug} fallback={match.division.sport.icon} size={12} className="shrink-0" />
               <span className="truncate">
                 {match.division.sport.name} · {match.division.name}
               </span>

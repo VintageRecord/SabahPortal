@@ -1,6 +1,7 @@
 import Link from "next/link";
 import LiveTicker from "@/components/LiveTicker";
 import MatchCard from "@/components/MatchCard";
+import SportIcon from "@/components/icons/SportIcon";
 import { getLiveMatches, getMatchesByDate, getSettings, getSports } from "@/lib/data";
 import { formatDateLong, toDateKey } from "@/lib/format";
 
@@ -59,7 +60,7 @@ export default async function HomePage() {
               href={`/sukan/${sport.slug}`}
               className="group flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-center transition hover:-translate-y-0.5 hover:border-maroon-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
             >
-              <span className="text-3xl">{sport.icon}</span>
+              <SportIcon slug={sport.slug} fallback={sport.icon} size={32} className="text-maroon-700 transition group-hover:scale-110 dark:text-maroon-400" />
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                 {sport.name}
               </span>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import SportIcon from "./icons/SportIcon";
 
 interface SportNavItem {
   slug: string;
@@ -67,7 +68,7 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
                     href={`/sukan/${sport.slug}`}
                     className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-slate-100"
                   >
-                    <span>{sport.icon}</span>
+                    <SportIcon slug={sport.slug} fallback={sport.icon} size={16} className="shrink-0" />
                     <span className="flex-1">{sport.name}</span>
                     {sport.divisions.length > 1 && (
                       <span className="text-[11px] text-slate-400">
@@ -122,7 +123,7 @@ export default function Header({ sports, title }: { sports: SportNavItem[]; titl
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm hover:bg-white/10"
                 >
-                  <span>{sport.icon}</span>
+                  <SportIcon slug={sport.slug} fallback={sport.icon} size={16} className="shrink-0" />
                   <span className="flex-1">{sport.name}</span>
                   {sport.divisions.length > 1 && (
                     <span className="text-[11px] text-white/50">

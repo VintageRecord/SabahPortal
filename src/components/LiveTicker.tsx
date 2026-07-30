@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import SportIcon from "./icons/SportIcon";
 import type { MatchWithTeamsAndDivision } from "@/lib/types";
 
 export default function LiveTicker({
@@ -44,8 +45,9 @@ export default function LiveTicker({
             href={`/sukan/${m.division.sport.slug}/${m.division.slug}`}
             className="flex shrink-0 flex-col justify-center rounded-lg bg-white px-3 py-1 text-xs shadow-sm dark:bg-slate-900"
           >
-            <span className="mb-0.5 text-[10px] font-medium text-slate-400">
-              {m.division.sport.icon} {m.division.sport.name} · {m.division.name}
+            <span className="mb-0.5 flex items-center gap-1 text-[10px] font-medium text-slate-400">
+              <SportIcon slug={m.division.sport.slug} fallback={m.division.sport.icon} size={10} className="shrink-0" />
+              {m.division.sport.name} · {m.division.name}
             </span>
             <span className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
               {m.teamA.shortName} {m.scoreA} - {m.scoreB} {m.teamB.shortName}

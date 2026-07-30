@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SportIcon from "@/components/icons/SportIcon";
 import { getAllStreams } from "@/lib/data";
 import { PLATFORM_ICON, PLATFORM_LABEL } from "@/lib/format";
 
@@ -53,7 +54,8 @@ export default async function StreamsPage() {
                 href={`/sukan/${stream.division.sport.slug}/${stream.division.slug}`}
                 className="flex items-center gap-1.5 text-xs font-medium text-maroon-600 hover:underline"
               >
-                {stream.division.sport.icon} {stream.division.sport.name} · {stream.division.name}
+                <SportIcon slug={stream.division.sport.slug} fallback={stream.division.sport.icon} size={13} className="shrink-0" />
+                {stream.division.sport.name} · {stream.division.name}
               </Link>
             </div>
           ))}

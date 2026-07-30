@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SportIcon from "@/components/icons/SportIcon";
 import { getSports } from "@/lib/data";
 
 export default async function AdminTeamsIndexPage() {
@@ -18,7 +19,7 @@ export default async function AdminTeamsIndexPage() {
             className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
           >
             <p className="mb-2 flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
-              <span>{sport.icon}</span> {sport.name}
+              <SportIcon slug={sport.slug} fallback={sport.icon} size={16} /> {sport.name}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {sport.divisions.map((division) => (

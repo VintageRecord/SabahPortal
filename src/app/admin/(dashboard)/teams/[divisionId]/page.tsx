@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
+import SportIcon from "@/components/icons/SportIcon";
 import { toDateKey } from "@/lib/format";
 import {
   createTeamAction,
@@ -31,7 +32,7 @@ export default async function AdminDivisionTeamsPage({
         ← Semua sukan
       </Link>
       <h1 className="mb-6 mt-1 flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-100">
-        <span>{division.sport.icon}</span> {division.sport.name} · {division.name}
+        <SportIcon slug={division.sport.slug} fallback={division.sport.icon} size={20} /> {division.sport.name} · {division.name}
       </h1>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">

@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import SportIcon from "@/components/icons/SportIcon";
 import { getSportBySlug } from "@/lib/data";
 
 export default async function SportPage({
@@ -18,7 +19,7 @@ export default async function SportPage({
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <div className="mb-6 flex items-center gap-3">
-        <span className="text-4xl">{sport.icon}</span>
+        <SportIcon slug={sport.slug} fallback={sport.icon} size={40} className="text-maroon-700 dark:text-maroon-400" />
         <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{sport.name}</h1>
       </div>
       <p className="mb-4 text-sm text-slate-500">Pilih bahagian:</p>

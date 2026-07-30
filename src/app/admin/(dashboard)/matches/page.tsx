@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SportIcon from "@/components/icons/SportIcon";
 import { getSports } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 
@@ -28,9 +29,10 @@ export default async function AdminMatchesIndexPage() {
               <Link
                 key={m.id}
                 href={`/admin/matches/${m.divisionId}`}
-                className="rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm dark:bg-slate-900 dark:text-slate-100"
+                className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm dark:bg-slate-900 dark:text-slate-100"
               >
-                {m.division.sport.icon} {m.teamA.shortName} {m.scoreA}-{m.scoreB} {m.teamB.shortName}
+                <SportIcon slug={m.division.sport.slug} fallback={m.division.sport.icon} size={13} className="shrink-0" />
+                {m.teamA.shortName} {m.scoreA}-{m.scoreB} {m.teamB.shortName}
               </Link>
             ))}
           </div>
@@ -44,7 +46,7 @@ export default async function AdminMatchesIndexPage() {
             className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
           >
             <p className="mb-2 flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
-              <span>{sport.icon}</span> {sport.name}
+              <SportIcon slug={sport.slug} fallback={sport.icon} size={16} /> {sport.name}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {sport.divisions.map((division) => (
