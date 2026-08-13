@@ -101,7 +101,7 @@ export default function MatchDetailHeader({
               key={r.round}
               className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tabular-nums text-white"
             >
-              {scoreLabel} {r.round}: {r.scoreA}-{r.scoreB}
+              Pusingan {r.round}: {r.scoreA}-{r.scoreB}
             </span>
           ))}
         </div>

@@ -291,18 +291,18 @@ function RoundBasedMatchCard({
       <div className="mt-3 space-y-2 border-t border-slate-100 pt-3 dark:border-slate-800">
         <span className="text-xs font-medium text-slate-400">Skor mengikut {scoreLabel.toLowerCase()}:</span>
         <RoundInput
-          label={`${scoreLabel} 1`}
+          label="Pusingan 1"
           existing={roundByNumber.get(1)}
           onSave={(a, b) => onSaveRound(1, a, b)}
         />
         <RoundInput
-          label={`${scoreLabel} 2`}
+          label="Pusingan 2"
           existing={roundByNumber.get(2)}
           onSave={(a, b) => onSaveRound(2, a, b)}
         />
         {showRound3 && (
           <RoundInput
-            label={`${scoreLabel} 3 (penentu)`}
+            label="Pusingan 3 (penentu)"
             existing={roundByNumber.get(3)}
             onSave={(a, b) => onSaveRound(3, a, b)}
           />
@@ -350,7 +350,7 @@ function RoundInput({
 
   return (
     <div className="flex items-center gap-2">
-      <span className="w-24 shrink-0 text-xs font-semibold text-slate-500">{label}</span>
+      <span className="w-36 shrink-0 text-xs font-semibold text-slate-500">{label}</span>
       <input
         type="number"
         min={0}
