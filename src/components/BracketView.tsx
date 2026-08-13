@@ -12,13 +12,60 @@ function Connector() {
   );
 }
 
+function BracketRound({
+  label,
+  matches,
+  columns,
+  emptyLabel,
+  scoreLabel,
+  sportSlug,
+  divisionSlug,
+}: {
+  label: string;
+  matches: BracketMatch[];
+  columns: 1 | 2;
+  emptyLabel?: string;
+  scoreLabel: string;
+  sportSlug: string;
+  divisionSlug: string;
+}) {
+  if (matches.length === 0 && !emptyLabel) return null;
+
+  return (
+    <div>
+      <p className="mb-3 text-center text-xs font-bold uppercase tracking-wide text-slate-400">
+        {label}
+      </p>
+      {matches.length === 0 ? (
+        <div className="mx-auto max-w-sm rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-400 dark:border-slate-700">
+          {emptyLabel}
+        </div>
+      ) : (
+        <div className={`grid gap-3 ${columns === 2 ? "sm:grid-cols-2" : "mx-auto max-w-sm"}`}>
+          {matches.map((match) => (
+            <BracketMatchCard
+              key={match.id}
+              match={match}
+              scoreLabel={scoreLabel}
+              sportSlug={sportSlug}
+              divisionSlug={divisionSlug}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function BracketView({
+  quarterfinals,
   semifinals,
   final,
   scoreLabel,
   sportSlug,
   divisionSlug,
 }: {
+  quarterfinals: BracketMatch[];
   semifinals: BracketMatch[];
   final: BracketMatch | null;
   scoreLabel: string;
@@ -29,44 +76,41 @@ export default function BracketView({
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div>
-        <p className="mb-3 text-center text-xs font-bold uppercase tracking-wide text-slate-400">
-          Separuh Akhir
-        </p>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {semifinals.map((match) => (
-            <BracketMatchCard
-              key={match.id}
-              match={match}
-              scoreLabel={scoreLabel}
-              sportSlug={sportSlug}
-              divisionSlug={divisionSlug}
-            />
-          ))}
-        </div>
-      </div>
+      {quarterfinals.length > 0 && (
+        <>
+          <BracketRound
+            label="Suku Akhir"
+            matches={quarterfinals}
+            columns={2}
+            scoreLabel={scoreLabel}
+            sportSlug={sportSlug}
+            divisionSlug={divisionSlug}
+          />
+          <Connector />
+        </>
+      )}
+
+      <BracketRound
+        label="Separuh Akhir"
+        matches={semifinals}
+        columns={2}
+        emptyLabel={quarterfinals.length > 0 ? "Menunggu keputusan suku akhir" : undefined}
+        scoreLabel={scoreLabel}
+        sportSlug={sportSlug}
+        divisionSlug={divisionSlug}
+      />
 
       <Connector />
 
-      <div>
-        <p className="mb-3 text-center text-xs font-bold uppercase tracking-wide text-slate-400">
-          Akhir
-        </p>
-        {final ? (
-          <div className="mx-auto max-w-sm">
-            <BracketMatchCard
-              match={final}
-              scoreLabel={scoreLabel}
-              sportSlug={sportSlug}
-              divisionSlug={divisionSlug}
-            />
-          </div>
-        ) : (
-          <div className="mx-auto max-w-sm rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-400 dark:border-slate-700">
-            Menunggu keputusan separuh akhir
-          </div>
-        )}
-      </div>
+      <BracketRound
+        label="Akhir"
+        matches={final ? [final] : []}
+        columns={1}
+        emptyLabel="Menunggu keputusan separuh akhir"
+        scoreLabel={scoreLabel}
+        sportSlug={sportSlug}
+        divisionSlug={divisionSlug}
+      />
 
       {champion && (
         <>

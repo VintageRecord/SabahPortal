@@ -321,7 +321,7 @@ async function main() {
         divName: divDef.name,
       });
 
-      const teamCount = 6;
+      const teamCount = 8;
       const createdTeams = [];
       const teamPlayers = new Map<string, { id: string }[]>();
       for (let i = 0; i < teamCount; i++) {
@@ -356,11 +356,11 @@ async function main() {
           teamPlayers.set(team.id, players);
         }
       }
-      districtOffset += 3;
+      districtOffset += 4;
 
       if (sportDef.slug === "futsal" && divDef.slug === "lelaki") {
         bracketDemoDivisionId = division.id;
-        bracketDemoTeams = createdTeams.slice(0, 4);
+        bracketDemoTeams = createdTeams.slice(0, 8);
       }
 
       const rounds = roundRobinRounds(createdTeams.length);
@@ -452,48 +452,68 @@ async function main() {
     }
   }
 
-  // Demo bracket: Futsal Lelaki, top 4 seeded 1v4 / 2v3, both semifinals and
-  // the final already decided, so the "Carta" feature has something to show.
-  if (bracketDemoDivisionId && bracketDemoTeams.length === 4) {
-    const [seed1, seed2, seed3, seed4] = bracketDemoTeams;
+  // Demo bracket: Futsal Lelaki, 8-team single elimination with standard
+  // seeding (1v8, 4v5, 2v7, 3v6), fully played out so the "Carta" feature
+  // has something to show immediately after seeding.
+  if (bracketDemoDivisionId && bracketDemoTeams.length === 8) {
+    const [s1, s2, s3, s4, s5, s6, s7, s8] = bracketDemoTeams;
     const venue = "Arena Futsal MBSA, Kota Kinabalu";
 
-    const sf1 = await prisma.match.create({
-      data: {
-        divisionId: bracketDemoDivisionId,
-        round: 1,
-        stage: MatchStage.SEMIFINAL,
-        bracketSlot: 1,
-        teamAId: seed1.id,
-        teamBId: seed4.id,
-        scoreA: 3,
-        scoreB: 1,
-        winnerId: seed1.id,
-        status: MatchStatus.FINISHED,
-        date: new Date(addDays(TODAY, 2)),
-        time: "15:00",
-        venue,
-        minute: "Tamat",
-      },
-    });
-    const sf2 = await prisma.match.create({
-      data: {
-        divisionId: bracketDemoDivisionId,
-        round: 1,
-        stage: MatchStage.SEMIFINAL,
-        bracketSlot: 2,
-        teamAId: seed2.id,
-        teamBId: seed3.id,
-        scoreA: 4,
-        scoreB: 2,
-        winnerId: seed2.id,
-        status: MatchStatus.FINISHED,
-        date: new Date(addDays(TODAY, 2)),
-        time: "17:00",
-        venue,
-        minute: "Tamat",
-      },
-    });
+    const qfPairs: [typeof s1, typeof s1, number, number][] = [
+      [s1, s8, 4, 1],
+      [s4, s5, 3, 2],
+      [s2, s7, 5, 0],
+      [s3, s6, 2, 1],
+    ];
+    const qfWinners: (typeof s1)[] = [];
+    for (const [idx, [teamA, teamB, scoreA, scoreB]] of qfPairs.entries()) {
+      await prisma.match.create({
+        data: {
+          divisionId: bracketDemoDivisionId,
+          round: 1,
+          stage: MatchStage.QUARTERFINAL,
+          bracketSlot: idx + 1,
+          teamAId: teamA.id,
+          teamBId: teamB.id,
+          scoreA,
+          scoreB,
+          winnerId: scoreA > scoreB ? teamA.id : teamB.id,
+          status: MatchStatus.FINISHED,
+          date: new Date(addDays(TODAY, 2)),
+          time: "15:00",
+          venue,
+          minute: "Tamat",
+        },
+      });
+      qfWinners.push(scoreA > scoreB ? teamA : teamB);
+    }
+
+    const sfPairs: [typeof s1, typeof s1, number, number][] = [
+      [qfWinners[0], qfWinners[1], 3, 2],
+      [qfWinners[2], qfWinners[3], 2, 1],
+    ];
+    const sfWinners: (typeof s1)[] = [];
+    for (const [idx, [teamA, teamB, scoreA, scoreB]] of sfPairs.entries()) {
+      await prisma.match.create({
+        data: {
+          divisionId: bracketDemoDivisionId,
+          round: 1,
+          stage: MatchStage.SEMIFINAL,
+          bracketSlot: idx + 1,
+          teamAId: teamA.id,
+          teamBId: teamB.id,
+          scoreA,
+          scoreB,
+          winnerId: scoreA > scoreB ? teamA.id : teamB.id,
+          status: MatchStatus.FINISHED,
+          date: new Date(addDays(TODAY, 3)),
+          time: "17:00",
+          venue,
+          minute: "Tamat",
+        },
+      });
+      sfWinners.push(scoreA > scoreB ? teamA : teamB);
+    }
 
     await prisma.match.create({
       data: {
@@ -501,13 +521,13 @@ async function main() {
         round: 1,
         stage: MatchStage.FINAL,
         bracketSlot: 1,
-        teamAId: sf1.teamAId,
-        teamBId: sf2.teamAId,
+        teamAId: sfWinners[0].id,
+        teamBId: sfWinners[1].id,
         scoreA: 2,
-        scoreB: 1,
-        winnerId: sf1.teamAId,
+        scoreB: 0,
+        winnerId: sfWinners[0].id,
         status: MatchStatus.FINISHED,
-        date: new Date(addDays(TODAY, 3)),
+        date: new Date(addDays(TODAY, 4)),
         time: "19:00",
         venue,
         minute: "Tamat",

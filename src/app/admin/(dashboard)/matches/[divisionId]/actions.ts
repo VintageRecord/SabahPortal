@@ -22,6 +22,104 @@ async function loadMatchContext(matchId: string) {
   return match;
 }
 
+async function loadDivisionContext(divisionId: string) {
+  const division = await prisma.division.findUniqueOrThrow({
+    where: { id: divisionId },
+    include: { sport: true },
+  });
+  return division;
+}
+
+// Bracket stage order and what each stage feeds into. FINAL has no next
+// stage -- once it's decided, the champion is known and nothing more to do.
+const NEXT_STAGE: Partial<Record<MatchStage, MatchStage>> = {
+  QUARTERFINAL: MatchStage.SEMIFINAL,
+  SEMIFINAL: MatchStage.FINAL,
+};
+
+function defaultTimesFor(stage: MatchStage): string[] {
+  if (stage === MatchStage.SEMIFINAL) return ["15:00", "17:00"];
+  if (stage === MatchStage.FINAL) return ["19:00"];
+  return ["15:00", "16:00", "17:00", "18:00"];
+}
+
+/**
+ * Once every match in a stage has a winner, automatically create the next
+ * stage's matches by pairing winners two at a time (slot 1+2 -> next slot 1,
+ * slot 3+4 -> next slot 2, ...). Never overwrites an already-generated next
+ * stage, so this is safe to call after every bracket match update.
+ */
+async function progressBracket(divisionId: string) {
+  const bracketMatches = await prisma.match.findMany({
+    where: { divisionId, stage: { not: MatchStage.GROUP } },
+    orderBy: [{ stage: "asc" }, { bracketSlot: "asc" }],
+  });
+
+  const byStage = new Map<MatchStage, typeof bracketMatches>();
+  for (const match of bracketMatches) {
+    const list = byStage.get(match.stage) ?? [];
+    list.push(match);
+    byStage.set(match.stage, list);
+  }
+
+  for (const [stage, matches] of byStage) {
+    const nextStage = NEXT_STAGE[stage];
+    if (!nextStage || byStage.has(nextStage)) continue;
+
+    const allDecided = matches.every((m) => m.winnerId);
+    if (!allDecided) continue;
+
+    const winners = [...matches]
+      .sort((a, b) => (a.bracketSlot ?? 0) - (b.bracketSlot ?? 0))
+      .map((m) => m.winnerId as string);
+    const venue = matches[0].venue;
+    const latestDate = matches.reduce((max, m) => (m.date > max ? m.date : max), matches[0].date);
+    const nextDate = new Date(latestDate);
+    nextDate.setUTCDate(nextDate.getUTCDate() + 1);
+    const times = defaultTimesFor(nextStage);
+
+    for (let i = 0; i < winners.length; i += 2) {
+      const slot = i / 2 + 1;
+      await prisma.match.create({
+        data: {
+          divisionId,
+          round: 1,
+          stage: nextStage,
+          bracketSlot: slot,
+          teamAId: winners[i],
+          teamBId: winners[i + 1],
+          status: MatchStatus.UPCOMING,
+          date: nextDate,
+          time: times[slot - 1] ?? times[0],
+          venue,
+        },
+      });
+    }
+  }
+}
+
+/**
+ * Called after any update that could finish a bracket match. If the match
+ * just finished with a decisive score (no tie), the winner is inferred
+ * automatically; a genuine tie is left for the admin to resolve by hand via
+ * setMatchWinnerAction, since a plain score can't say who advances. Either
+ * way, checks whether the whole stage is now decided and auto-generates the
+ * next round if so.
+ */
+async function finalizeBracketMatchIfNeeded(matchId: string) {
+  const match = await prisma.match.findUniqueOrThrow({ where: { id: matchId } });
+  if (match.stage === MatchStage.GROUP || match.status !== MatchStatus.FINISHED) return;
+
+  if (!match.winnerId && match.scoreA !== match.scoreB) {
+    await prisma.match.update({
+      where: { id: matchId },
+      data: { winnerId: match.scoreA > match.scoreB ? match.teamAId : match.teamBId },
+    });
+  }
+
+  await progressBracket(match.divisionId);
+}
+
 export async function adjustScoreAction(formData: FormData) {
   const matchId = String(formData.get("matchId"));
   const side = String(formData.get("side")); // "A" | "B"
@@ -52,58 +150,35 @@ export async function setMatchStatusAction(formData: FormData) {
     },
   });
 
+  await finalizeBracketMatchIfNeeded(matchId);
   pathsFor(match.divisionId, match.division.sport.slug, match.division.slug);
 }
 
-async function loadDivisionContext(divisionId: string) {
-  const division = await prisma.division.findUniqueOrThrow({
-    where: { id: divisionId },
-    include: { sport: true },
-  });
-  return division;
-}
-
-export async function generateSemifinalsAction(formData: FormData) {
+export async function generateQuarterfinalsAction(formData: FormData) {
   const divisionId = String(formData.get("divisionId"));
   const venue = String(formData.get("venue"));
   const date = String(formData.get("date"));
-  const sf1TeamA = String(formData.get("sf1TeamA"));
-  const sf1TeamB = String(formData.get("sf1TeamB"));
-  const sf1Time = String(formData.get("sf1Time"));
-  const sf2TeamA = String(formData.get("sf2TeamA"));
-  const sf2TeamB = String(formData.get("sf2TeamB"));
-  const sf2Time = String(formData.get("sf2Time"));
-
   const division = await loadDivisionContext(divisionId);
 
-  await prisma.match.create({
-    data: {
-      divisionId,
-      round: 1,
-      stage: MatchStage.SEMIFINAL,
-      bracketSlot: 1,
-      teamAId: sf1TeamA,
-      teamBId: sf1TeamB,
-      status: MatchStatus.UPCOMING,
-      date: new Date(date),
-      time: sf1Time,
-      venue,
-    },
-  });
-  await prisma.match.create({
-    data: {
-      divisionId,
-      round: 1,
-      stage: MatchStage.SEMIFINAL,
-      bracketSlot: 2,
-      teamAId: sf2TeamA,
-      teamBId: sf2TeamB,
-      status: MatchStatus.UPCOMING,
-      date: new Date(date),
-      time: sf2Time,
-      venue,
-    },
-  });
+  for (let slot = 1; slot <= 4; slot++) {
+    const teamAId = String(formData.get(`qf${slot}TeamA`));
+    const teamBId = String(formData.get(`qf${slot}TeamB`));
+    const time = String(formData.get(`qf${slot}Time`));
+    await prisma.match.create({
+      data: {
+        divisionId,
+        round: 1,
+        stage: MatchStage.QUARTERFINAL,
+        bracketSlot: slot,
+        teamAId,
+        teamBId,
+        status: MatchStatus.UPCOMING,
+        date: new Date(date),
+        time,
+        venue,
+      },
+    });
+  }
 
   pathsFor(divisionId, division.sport.slug, division.slug);
 }
@@ -118,35 +193,8 @@ export async function setMatchWinnerAction(formData: FormData) {
     data: { winnerId },
   });
 
+  await progressBracket(match.divisionId);
   pathsFor(match.divisionId, match.division.sport.slug, match.division.slug);
-}
-
-export async function generateFinalAction(formData: FormData) {
-  const divisionId = String(formData.get("divisionId"));
-  const teamAId = String(formData.get("teamAId"));
-  const teamBId = String(formData.get("teamBId"));
-  const date = String(formData.get("date"));
-  const time = String(formData.get("time"));
-  const venue = String(formData.get("venue"));
-
-  const division = await loadDivisionContext(divisionId);
-
-  await prisma.match.create({
-    data: {
-      divisionId,
-      round: 1,
-      stage: MatchStage.FINAL,
-      bracketSlot: 1,
-      teamAId,
-      teamBId,
-      status: MatchStatus.UPCOMING,
-      date: new Date(date),
-      time,
-      venue,
-    },
-  });
-
-  pathsFor(divisionId, division.sport.slug, division.slug);
 }
 
 export async function resetBracketAction(formData: FormData) {
@@ -185,5 +233,6 @@ export async function updateMatchDetailsAction(formData: FormData) {
     },
   });
 
+  await finalizeBracketMatchIfNeeded(matchId);
   pathsFor(match.divisionId, match.division.sport.slug, match.division.slug);
 }

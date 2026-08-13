@@ -15,9 +15,10 @@ export default async function DivisionBracketPage({
   const bracketMatches = await getBracketMatches(division.id);
   if (bracketMatches.length === 0) notFound();
 
-  const semifinals = bracketMatches
-    .filter((m) => m.stage === "SEMIFINAL")
-    .sort((a, b) => (a.bracketSlot ?? 0) - (b.bracketSlot ?? 0));
+  const bySlot = (a: { bracketSlot: number | null }, b: { bracketSlot: number | null }) =>
+    (a.bracketSlot ?? 0) - (b.bracketSlot ?? 0);
+  const quarterfinals = bracketMatches.filter((m) => m.stage === "QUARTERFINAL").sort(bySlot);
+  const semifinals = bracketMatches.filter((m) => m.stage === "SEMIFINAL").sort(bySlot);
   const final = bracketMatches.find((m) => m.stage === "FINAL") ?? null;
 
   return (
@@ -26,6 +27,7 @@ export default async function DivisionBracketPage({
         Carta Play-Off
       </h2>
       <BracketView
+        quarterfinals={quarterfinals}
         semifinals={semifinals}
         final={final}
         scoreLabel={sport.scoreLabel}

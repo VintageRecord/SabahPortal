@@ -17,6 +17,7 @@ enum MatchStatus {
 
 enum MatchStage {
   GROUP
+  QUARTERFINAL
   SEMIFINAL
   FINAL
 }
