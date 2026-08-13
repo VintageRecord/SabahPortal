@@ -2,11 +2,12 @@
 
 import AdminMatchCard from "./AdminMatchCard";
 import { generateQuarterfinalsAction, resetBracketAction, setMatchWinnerAction } from "./actions";
-import type { Match, MatchStage, Team } from "@prisma/client";
+import type { Match, MatchRound, MatchStage, Team } from "@prisma/client";
 import type { StandingRow } from "@/lib/standings";
 import { toDateKey } from "@/lib/format";
 
-type MatchWithTeams = Match & { teamA: Team; teamB: Team; winner: Team | null };
+type MatchWithTeams = Match & { teamA: Team; teamB: Team; winner: Team | null; rounds?: MatchRound[] };
+type SportInfo = { roundBased: boolean; scoreLabel: string };
 
 const STAGE_LABEL: Record<string, string> = {
   QUARTERFINAL: "Suku Akhir",
@@ -28,11 +29,13 @@ export default function BracketAdmin({
   standings,
   bracketMatches,
   defaultVenue,
+  sport,
 }: {
   divisionId: string;
   standings: StandingRow[];
   bracketMatches: MatchWithTeams[];
   defaultVenue: string;
+  sport: SportInfo;
 }) {
   const top8 = standings.slice(0, 8);
   const today = toDateKey(new Date());
@@ -123,18 +126,20 @@ export default function BracketAdmin({
 
   return (
     <div className="space-y-6">
-      <BracketStageSection label={STAGE_LABEL.QUARTERFINAL} matches={quarterfinals} columns={2} />
+      <BracketStageSection label={STAGE_LABEL.QUARTERFINAL} matches={quarterfinals} columns={2} sport={sport} />
       <BracketStageSection
         label={STAGE_LABEL.SEMIFINAL}
         matches={semifinals}
         columns={2}
         pending={quarterfinals.length > 0 && semifinals.length === 0}
+        sport={sport}
       />
       <BracketStageSection
         label={STAGE_LABEL.FINAL}
         matches={final ? [final] : []}
         columns={1}
         pending={semifinals.length > 0 && !final}
+        sport={sport}
       />
 
       <form
@@ -159,11 +164,13 @@ function BracketStageSection({
   matches,
   columns,
   pending,
+  sport,
 }: {
   label: string;
   matches: MatchWithTeams[];
   columns: 1 | 2;
   pending?: boolean;
+  sport: SportInfo;
 }) {
   if (matches.length === 0 && !pending) return null;
 
@@ -177,7 +184,7 @@ function BracketStageSection({
       ) : (
         <div className={`grid gap-3 ${columns === 2 ? "sm:grid-cols-2" : ""}`}>
           {matches.map((match) => (
-            <BracketMatchAdmin key={match.id} match={match} />
+            <BracketMatchAdmin key={match.id} match={match} sport={sport} />
           ))}
         </div>
       )}
@@ -209,11 +216,11 @@ function TeamSelect({
   );
 }
 
-function BracketMatchAdmin({ match }: { match: MatchWithTeams }) {
+function BracketMatchAdmin({ match, sport }: { match: MatchWithTeams; sport: SportInfo }) {
   const isFinal = match.stage === ("FINAL" as MatchStage);
   return (
     <div className="space-y-2">
-      <AdminMatchCard match={match} />
+      <AdminMatchCard match={match} sport={sport} />
       {match.status === "FINISHED" && !match.winnerId && (
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-2.5 text-xs dark:border-amber-900 dark:bg-amber-950/30">
           <span className="font-semibold text-amber-800 dark:text-amber-300">

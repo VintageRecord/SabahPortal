@@ -31,6 +31,7 @@ export default async function DivisionBracketPage({
         semifinals={semifinals}
         final={final}
         scoreLabel={sport.scoreLabel}
+        roundBased={sport.roundBased}
         sportSlug={sportSlug}
         divisionSlug={divisionSlug}
       />

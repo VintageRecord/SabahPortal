@@ -27,7 +27,12 @@ export default async function MatchDetailPage({
         ← Kembali ke {match.division.sport.name} · {match.division.name}
       </Link>
 
-      <MatchDetailHeader match={match} divisionId={match.divisionId} />
+      <MatchDetailHeader
+        match={match}
+        divisionId={match.divisionId}
+        roundBased={match.division.sport.roundBased}
+        scoreLabel={match.division.sport.scoreLabel}
+      />
 
       <div className="mt-6">
         {match.division.sport.hasLineup ? (

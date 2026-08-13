@@ -40,6 +40,7 @@ const COLORS = [
 ];
 
 type ScoreStyle = "games3" | "sets3" | "sets5" | "legs7" | "points13" | "goals";
+type RoundScoreStyle = "points21" | "points25" | "points13" | "dartLeg";
 
 interface SportDef {
   slug: string;
@@ -51,6 +52,12 @@ interface SportDef {
   hasLineup?: boolean;
   positions?: string[];
   divisions: { slug: string; name: string }[];
+  // Round-based sports are played best-of-3: first side to win 2 rounds wins
+  // the match. roundScoreStyle generates a realistic-looking score for a
+  // single round (e.g. 21-18); Match.scoreA/scoreB then store rounds won
+  // (0-2), not the per-round score.
+  roundBased?: boolean;
+  roundScoreStyle?: RoundScoreStyle;
 }
 
 const FIRST_NAMES = [
@@ -81,6 +88,8 @@ const SPORT_DEFS: SportDef[] = [
     venues: ["Dewan Badminton MSN Sabah, Kota Kinabalu"],
     scoreStyle: "games3",
     scoreLabel: "Set",
+    roundBased: true,
+    roundScoreStyle: "points21",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -99,6 +108,8 @@ const SPORT_DEFS: SportDef[] = [
     venues: ["Kompleks Pickleball Likas"],
     scoreStyle: "games3",
     scoreLabel: "Gim",
+    roundBased: true,
+    roundScoreStyle: "points21",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -108,6 +119,8 @@ const SPORT_DEFS: SportDef[] = [
     venues: ["Dewan Tenis Meja, Kompleks Belia & Sukan KK"],
     scoreStyle: "games3",
     scoreLabel: "Gim",
+    roundBased: true,
+    roundScoreStyle: "points21",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -119,6 +132,8 @@ const SPORT_DEFS: SportDef[] = [
     scoreLabel: "Set",
     hasLineup: true,
     positions: ["Pemukul Luar", "Pemukul Tengah", "Pengesan", "Penyangkak", "Libero"],
+    roundBased: true,
+    roundScoreStyle: "points25",
     divisions: [
       { slug: "lelaki", name: "Lelaki" },
       { slug: "wanita", name: "Wanita" },
@@ -131,6 +146,8 @@ const SPORT_DEFS: SportDef[] = [
     venues: ["Dewan Serbaguna, Kompleks Sukan Likas"],
     scoreStyle: "legs7",
     scoreLabel: "Leg",
+    roundBased: true,
+    roundScoreStyle: "dartLeg",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -140,6 +157,8 @@ const SPORT_DEFS: SportDef[] = [
     venues: ["Padang Petanque, Karamunsing"],
     scoreStyle: "points13",
     scoreLabel: "Mata",
+    roundBased: true,
+    roundScoreStyle: "points13",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -149,6 +168,8 @@ const SPORT_DEFS: SportDef[] = [
     venues: ["Dewan Komuniti Penampang"],
     scoreStyle: "games3",
     scoreLabel: "Set",
+    roundBased: true,
+    roundScoreStyle: "points25",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -243,6 +264,62 @@ function liveMinute(style: ScoreStyle) {
   }
 }
 
+function roundScoreFor(style: RoundScoreStyle, winnerIsA: boolean): [number, number] {
+  let winner: number;
+  let loser: number;
+  switch (style) {
+    case "points21":
+      winner = 21;
+      loser = randInt(12, 19);
+      break;
+    case "points25":
+      winner = 25;
+      loser = randInt(15, 23);
+      break;
+    case "points13":
+      winner = 13;
+      loser = randInt(3, 11);
+      break;
+    case "dartLeg":
+      // Points scored towards a 501 checkout -- higher always wins, so this
+      // stays consistent with every other round style and with how rounds
+      // won is recomputed elsewhere (scoreA > scoreB).
+      winner = 501;
+      loser = randInt(180, 470);
+      break;
+  }
+  return winnerIsA ? [winner, loser] : [loser, winner];
+}
+
+/** Simulates a completed best-of-3-rounds match: first side to win 2 rounds wins. */
+function simulateFinishedRoundBasedMatch(style: RoundScoreStyle) {
+  const rounds: { round: number; scoreA: number; scoreB: number }[] = [];
+  let winsA = 0;
+  let winsB = 0;
+  let roundNum = 1;
+  while (winsA < 2 && winsB < 2) {
+    const aWinsRound = Math.random() < 0.5;
+    const [scoreA, scoreB] = roundScoreFor(style, aWinsRound);
+    rounds.push({ round: roundNum, scoreA, scoreB });
+    if (aWinsRound) winsA += 1;
+    else winsB += 1;
+    roundNum += 1;
+  }
+  return { scoreA: winsA, scoreB: winsB, rounds };
+}
+
+/** Simulates a match currently in progress: round 1 decided, round 2 underway. */
+function simulateLiveRoundBasedMatch(style: RoundScoreStyle) {
+  const aWinsRound1 = Math.random() < 0.5;
+  const [scoreA, scoreB] = roundScoreFor(style, aWinsRound1);
+  return {
+    scoreA: aWinsRound1 ? 1 : 0,
+    scoreB: aWinsRound1 ? 0 : 1,
+    rounds: [{ round: 1, scoreA, scoreB }],
+    minute: "Pusingan 2",
+  };
+}
+
 const PLACEHOLDER_YOUTUBE_URL = "https://www.youtube.com/watch?v=TVpSVuUK3aY";
 const NON_LIVE_PLATFORMS: StreamPlatform[] = ["YOUTUBE", "TIKTOK", "FACEBOOK", "INSTAGRAM"];
 
@@ -299,6 +376,7 @@ async function main() {
         icon: sportDef.icon,
         hasLineup: sportDef.hasLineup ?? false,
         scoreLabel: sportDef.scoreLabel,
+        roundBased: sportDef.roundBased ?? false,
         order: sportOrder,
       },
     });
@@ -383,7 +461,22 @@ async function main() {
           let scoreA = 0;
           let scoreB = 0;
           let minute = "";
-          if (status === MatchStatus.FINISHED) {
+          let matchRounds: { round: number; scoreA: number; scoreB: number }[] = [];
+          if (sportDef.roundBased && sportDef.roundScoreStyle) {
+            if (status === MatchStatus.FINISHED) {
+              const sim = simulateFinishedRoundBasedMatch(sportDef.roundScoreStyle);
+              scoreA = sim.scoreA;
+              scoreB = sim.scoreB;
+              matchRounds = sim.rounds;
+              minute = "Tamat";
+            } else if (status === MatchStatus.LIVE) {
+              const sim = simulateLiveRoundBasedMatch(sportDef.roundScoreStyle);
+              scoreA = sim.scoreA;
+              scoreB = sim.scoreB;
+              matchRounds = sim.rounds;
+              minute = sim.minute;
+            }
+          } else if (status === MatchStatus.FINISHED) {
             [scoreA, scoreB] = finishedScore(sportDef.scoreStyle);
             minute = "Tamat";
           } else if (status === MatchStatus.LIVE) {
@@ -409,6 +502,12 @@ async function main() {
 
           if (status === MatchStatus.LIVE) {
             liveDivisionIds.add(division.id);
+          }
+
+          for (const r of matchRounds) {
+            await prisma.matchRound.create({
+              data: { matchId: match.id, round: r.round, scoreA: r.scoreA, scoreB: r.scoreB },
+            });
           }
 
           if (

@@ -9,9 +9,13 @@ import type { MatchWithTeams } from "@/lib/types";
 export default function MatchDetailHeader({
   match: initialMatch,
   divisionId,
+  roundBased = false,
+  scoreLabel = "Mata",
 }: {
   match: MatchWithTeams;
   divisionId: string;
+  roundBased?: boolean;
+  scoreLabel?: string;
 }) {
   const [match, setMatch] = useState(initialMatch);
 
@@ -57,15 +61,22 @@ export default function MatchDetailHeader({
           <span className="text-sm font-semibold sm:text-base">{match.teamA.name}</span>
         </div>
 
-        <div className="flex items-center gap-3 text-3xl font-extrabold tabular-nums sm:text-5xl">
-          {showScore ? (
-            <>
-              <span className={isLive ? "text-red-200" : ""}>{match.scoreA}</span>
-              <span className="text-white/40">:</span>
-              <span className={isLive ? "text-red-200" : ""}>{match.scoreB}</span>
-            </>
-          ) : (
-            <span className="text-lg font-semibold sm:text-xl">{match.time}</span>
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="flex items-center gap-3 text-3xl font-extrabold tabular-nums sm:text-5xl">
+            {showScore ? (
+              <>
+                <span className={isLive ? "text-red-200" : ""}>{match.scoreA}</span>
+                <span className="text-white/40">:</span>
+                <span className={isLive ? "text-red-200" : ""}>{match.scoreB}</span>
+              </>
+            ) : (
+              <span className="text-lg font-semibold sm:text-xl">{match.time}</span>
+            )}
+          </div>
+          {roundBased && showScore && (
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-maroon-100">
+              {scoreLabel} dimenangi
+            </span>
           )}
         </div>
 
@@ -82,6 +93,19 @@ export default function MatchDetailHeader({
         <span className="opacity-50">·</span>
         <span>{match.venue}</span>
       </div>
+
+      {roundBased && match.rounds && match.rounds.length > 0 && (
+        <div className="relative mt-4 flex flex-wrap items-center justify-center gap-2">
+          {match.rounds.map((r) => (
+            <span
+              key={r.round}
+              className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tabular-nums text-white"
+            >
+              {scoreLabel} {r.round}: {r.scoreA}-{r.scoreB}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

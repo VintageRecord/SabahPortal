@@ -2,18 +2,20 @@ import Link from "next/link";
 import TeamBadge from "./TeamBadge";
 import StatusPill from "./StatusPill";
 import { formatDateShort } from "@/lib/format";
-import type { Match, Team } from "@prisma/client";
+import type { Match, MatchRound, Team } from "@prisma/client";
 
-type BracketMatch = Match & { teamA: Team; teamB: Team; winner: Team | null };
+type BracketMatch = Match & { teamA: Team; teamB: Team; winner: Team | null; rounds?: MatchRound[] };
 
 export default function BracketMatchCard({
   match,
   scoreLabel,
+  roundBased = false,
   sportSlug,
   divisionSlug,
 }: {
   match: BracketMatch;
   scoreLabel: string;
+  roundBased?: boolean;
   sportSlug: string;
   divisionSlug: string;
 }) {
@@ -74,8 +76,13 @@ export default function BracketMatchCard({
           );
         })}
       </div>
-      {showScore && (
+      {showScore && !roundBased && (
         <p className="mt-2 text-right text-[10px] text-slate-400">Skor dalam {scoreLabel.toLowerCase()}</p>
+      )}
+      {showScore && roundBased && match.rounds && match.rounds.length > 0 && (
+        <p className="mt-2 text-right text-[10px] text-slate-400">
+          {match.rounds.map((r) => `${r.scoreA}-${r.scoreB}`).join(" · ")}
+        </p>
       )}
     </Link>
   );

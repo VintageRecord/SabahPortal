@@ -1,8 +1,8 @@
 import BracketMatchCard from "./BracketMatchCard";
 import TeamBadge from "./TeamBadge";
-import type { Match, Team } from "@prisma/client";
+import type { Match, MatchRound, Team } from "@prisma/client";
 
-type BracketMatch = Match & { teamA: Team; teamB: Team; winner: Team | null };
+type BracketMatch = Match & { teamA: Team; teamB: Team; winner: Team | null; rounds?: MatchRound[] };
 
 function Connector() {
   return (
@@ -18,6 +18,7 @@ function BracketRound({
   columns,
   emptyLabel,
   scoreLabel,
+  roundBased,
   sportSlug,
   divisionSlug,
 }: {
@@ -26,6 +27,7 @@ function BracketRound({
   columns: 1 | 2;
   emptyLabel?: string;
   scoreLabel: string;
+  roundBased: boolean;
   sportSlug: string;
   divisionSlug: string;
 }) {
@@ -47,6 +49,7 @@ function BracketRound({
               key={match.id}
               match={match}
               scoreLabel={scoreLabel}
+              roundBased={roundBased}
               sportSlug={sportSlug}
               divisionSlug={divisionSlug}
             />
@@ -62,6 +65,7 @@ export default function BracketView({
   semifinals,
   final,
   scoreLabel,
+  roundBased,
   sportSlug,
   divisionSlug,
 }: {
@@ -69,6 +73,7 @@ export default function BracketView({
   semifinals: BracketMatch[];
   final: BracketMatch | null;
   scoreLabel: string;
+  roundBased: boolean;
   sportSlug: string;
   divisionSlug: string;
 }) {
@@ -83,6 +88,7 @@ export default function BracketView({
             matches={quarterfinals}
             columns={2}
             scoreLabel={scoreLabel}
+            roundBased={roundBased}
             sportSlug={sportSlug}
             divisionSlug={divisionSlug}
           />
@@ -96,6 +102,7 @@ export default function BracketView({
         columns={2}
         emptyLabel={quarterfinals.length > 0 ? "Menunggu keputusan suku akhir" : undefined}
         scoreLabel={scoreLabel}
+        roundBased={roundBased}
         sportSlug={sportSlug}
         divisionSlug={divisionSlug}
       />
@@ -108,6 +115,7 @@ export default function BracketView({
         columns={1}
         emptyLabel="Menunggu keputusan separuh akhir"
         scoreLabel={scoreLabel}
+        roundBased={roundBased}
         sportSlug={sportSlug}
         divisionSlug={divisionSlug}
       />

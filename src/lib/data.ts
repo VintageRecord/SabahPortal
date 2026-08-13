@@ -35,7 +35,7 @@ export async function getDivision(sportSlug: string, divisionSlug: string) {
 export async function getDivisionMatches(divisionId: string) {
   return prisma.match.findMany({
     where: { divisionId, stage: "GROUP" },
-    include: { teamA: true, teamB: true },
+    include: { teamA: true, teamB: true, rounds: { orderBy: { round: "asc" } } },
     orderBy: [{ date: "asc" }, { time: "asc" }],
   });
 }
@@ -48,7 +48,7 @@ export async function divisionHasBracket(divisionId: string) {
 export async function getBracketMatches(divisionId: string) {
   return prisma.match.findMany({
     where: { divisionId, stage: { not: "GROUP" } },
-    include: { teamA: true, teamB: true, winner: true },
+    include: { teamA: true, teamB: true, winner: true, rounds: { orderBy: { round: "asc" } } },
     orderBy: [{ stage: "asc" }, { bracketSlot: "asc" }],
   });
 }
@@ -113,6 +113,7 @@ export async function getMatchDetail(matchId: string) {
         include: { player: true },
         orderBy: { createdAt: "asc" },
       },
+      rounds: { orderBy: { round: "asc" } },
     },
   });
   if (!match) return null;

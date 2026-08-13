@@ -183,6 +183,57 @@ export async function generateQuarterfinalsAction(formData: FormData) {
   pathsFor(divisionId, division.sport.slug, division.slug);
 }
 
+/**
+ * Saves the score for one round of a best-of-3-rounds match (Sport.roundBased
+ * sports only). Recomputes rounds won from every saved round and, once one
+ * side reaches 2, marks the match FINISHED with a winner and (for bracket
+ * stages) advances the bracket -- no separate "who won?" step needed, since a
+ * round-based match is never ambiguous the way a tied running score is.
+ */
+export async function saveRoundResultAction(formData: FormData) {
+  const matchId = String(formData.get("matchId"));
+  const round = Number(formData.get("round"));
+  const scoreA = Math.max(0, Number(formData.get("scoreA")) || 0);
+  const scoreB = Math.max(0, Number(formData.get("scoreB")) || 0);
+
+  const match = await loadMatchContext(matchId);
+
+  await prisma.matchRound.upsert({
+    where: { matchId_round: { matchId, round } },
+    update: { scoreA, scoreB },
+    create: { matchId, round, scoreA, scoreB },
+  });
+
+  const rounds = await prisma.matchRound.findMany({
+    where: { matchId },
+    orderBy: { round: "asc" },
+  });
+  let roundsWonA = 0;
+  let roundsWonB = 0;
+  for (const r of rounds) {
+    if (r.scoreA > r.scoreB) roundsWonA += 1;
+    else if (r.scoreB > r.scoreA) roundsWonB += 1;
+  }
+  const decided = roundsWonA >= 2 || roundsWonB >= 2;
+
+  await prisma.match.update({
+    where: { id: matchId },
+    data: {
+      scoreA: roundsWonA,
+      scoreB: roundsWonB,
+      status: decided ? MatchStatus.FINISHED : MatchStatus.LIVE,
+      minute: decided ? "Tamat" : `Pusingan ${rounds.length + 1}`,
+      winnerId: decided ? (roundsWonA >= 2 ? match.teamAId : match.teamBId) : null,
+    },
+  });
+
+  if (decided) {
+    await progressBracket(match.divisionId);
+  }
+
+  pathsFor(match.divisionId, match.division.sport.slug, match.division.slug);
+}
+
 export async function setMatchWinnerAction(formData: FormData) {
   const matchId = String(formData.get("matchId"));
   const winnerId = String(formData.get("winnerId"));

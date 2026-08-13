@@ -44,14 +44,15 @@ model EventSettings {
 }
 
 model Sport {
-  id        String     @id @default(cuid())
-  slug      String     @unique
-  name      String
-  icon      String
-  hasLineup Boolean    @default(false)
-  scoreLabel String    @default("Mata")
-  order     Int        @default(0)
-  divisions Division[]
+  id         String     @id @default(cuid())
+  slug       String     @unique
+  name       String
+  icon       String
+  hasLineup  Boolean    @default(false)
+  scoreLabel String     @default("Mata")
+  roundBased Boolean    @default(false)
+  order      Int        @default(0)
+  divisions  Division[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -133,6 +134,7 @@ model Match {
   winner      Team?      @relation("MatchWinner", fields: [winnerId], references: [id], onDelete: SetNull)
 
   events MatchEvent[]
+  rounds MatchRound[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -140,6 +142,23 @@ model Match {
   @@index([divisionId])
   @@index([status])
   @@index([divisionId, stage])
+}
+
+// One game/set/leg within a best-of-3-rounds match, for sports where
+// Sport.roundBased is true. scoreA/scoreB on Match itself store the number
+// of rounds won by each side (0-2), derived from these rows.
+model MatchRound {
+  id      String @id @default(cuid())
+  matchId String
+  match   Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  round   Int
+  scoreA  Int    @default(0)
+  scoreB  Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([matchId, round])
 }
 
 model MatchEvent {

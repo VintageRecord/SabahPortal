@@ -22,12 +22,12 @@ export default async function AdminDivisionMatchesPage({
   const [matches, bracketMatches, teams, settings] = await Promise.all([
     prisma.match.findMany({
       where: { divisionId, stage: "GROUP" },
-      include: { teamA: true, teamB: true },
+      include: { teamA: true, teamB: true, rounds: { orderBy: { round: "asc" } } },
       orderBy: [{ round: "asc" }, { time: "asc" }],
     }),
     prisma.match.findMany({
       where: { divisionId, stage: { not: "GROUP" } },
-      include: { teamA: true, teamB: true, winner: true },
+      include: { teamA: true, teamB: true, winner: true, rounds: { orderBy: { round: "asc" } } },
       orderBy: [{ stage: "asc" }, { bracketSlot: "asc" }],
     }),
     prisma.team.findMany({ where: { divisionId } }),
@@ -65,7 +65,7 @@ export default async function AdminDivisionMatchesPage({
       </h2>
       <div className="space-y-3">
         {matches.map((match) => (
-          <AdminMatchCard key={match.id} match={match} />
+          <AdminMatchCard key={match.id} match={match} sport={division.sport} />
         ))}
       </div>
 
@@ -77,6 +77,7 @@ export default async function AdminDivisionMatchesPage({
         standings={standings}
         bracketMatches={bracketMatches}
         defaultVenue={matches[0]?.venue ?? ""}
+        sport={division.sport}
       />
     </div>
   );
