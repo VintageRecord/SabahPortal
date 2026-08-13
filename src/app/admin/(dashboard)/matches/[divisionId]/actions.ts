@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { MatchStatus } from "@prisma/client";
+import { MatchStage, MatchStatus } from "@prisma/client";
 
 function pathsFor(divisionId: string, sportSlug: string, divisionSlug: string) {
   revalidatePath(`/admin/matches/${divisionId}`);
@@ -11,6 +11,7 @@ function pathsFor(divisionId: string, sportSlug: string, divisionSlug: string) {
   revalidatePath("/jadual");
   revalidatePath(`/sukan/${sportSlug}/${divisionSlug}`);
   revalidatePath(`/sukan/${sportSlug}/${divisionSlug}/kedudukan`);
+  revalidatePath(`/sukan/${sportSlug}/${divisionSlug}/carta`);
 }
 
 async function loadMatchContext(matchId: string) {
@@ -52,6 +53,111 @@ export async function setMatchStatusAction(formData: FormData) {
   });
 
   pathsFor(match.divisionId, match.division.sport.slug, match.division.slug);
+}
+
+async function loadDivisionContext(divisionId: string) {
+  const division = await prisma.division.findUniqueOrThrow({
+    where: { id: divisionId },
+    include: { sport: true },
+  });
+  return division;
+}
+
+export async function generateSemifinalsAction(formData: FormData) {
+  const divisionId = String(formData.get("divisionId"));
+  const venue = String(formData.get("venue"));
+  const date = String(formData.get("date"));
+  const sf1TeamA = String(formData.get("sf1TeamA"));
+  const sf1TeamB = String(formData.get("sf1TeamB"));
+  const sf1Time = String(formData.get("sf1Time"));
+  const sf2TeamA = String(formData.get("sf2TeamA"));
+  const sf2TeamB = String(formData.get("sf2TeamB"));
+  const sf2Time = String(formData.get("sf2Time"));
+
+  const division = await loadDivisionContext(divisionId);
+
+  await prisma.match.create({
+    data: {
+      divisionId,
+      round: 1,
+      stage: MatchStage.SEMIFINAL,
+      bracketSlot: 1,
+      teamAId: sf1TeamA,
+      teamBId: sf1TeamB,
+      status: MatchStatus.UPCOMING,
+      date: new Date(date),
+      time: sf1Time,
+      venue,
+    },
+  });
+  await prisma.match.create({
+    data: {
+      divisionId,
+      round: 1,
+      stage: MatchStage.SEMIFINAL,
+      bracketSlot: 2,
+      teamAId: sf2TeamA,
+      teamBId: sf2TeamB,
+      status: MatchStatus.UPCOMING,
+      date: new Date(date),
+      time: sf2Time,
+      venue,
+    },
+  });
+
+  pathsFor(divisionId, division.sport.slug, division.slug);
+}
+
+export async function setMatchWinnerAction(formData: FormData) {
+  const matchId = String(formData.get("matchId"));
+  const winnerId = String(formData.get("winnerId"));
+
+  const match = await loadMatchContext(matchId);
+  await prisma.match.update({
+    where: { id: matchId },
+    data: { winnerId },
+  });
+
+  pathsFor(match.divisionId, match.division.sport.slug, match.division.slug);
+}
+
+export async function generateFinalAction(formData: FormData) {
+  const divisionId = String(formData.get("divisionId"));
+  const teamAId = String(formData.get("teamAId"));
+  const teamBId = String(formData.get("teamBId"));
+  const date = String(formData.get("date"));
+  const time = String(formData.get("time"));
+  const venue = String(formData.get("venue"));
+
+  const division = await loadDivisionContext(divisionId);
+
+  await prisma.match.create({
+    data: {
+      divisionId,
+      round: 1,
+      stage: MatchStage.FINAL,
+      bracketSlot: 1,
+      teamAId,
+      teamBId,
+      status: MatchStatus.UPCOMING,
+      date: new Date(date),
+      time,
+      venue,
+    },
+  });
+
+  pathsFor(divisionId, division.sport.slug, division.slug);
+}
+
+export async function resetBracketAction(formData: FormData) {
+  const divisionId = String(formData.get("divisionId"));
+  const division = await loadDivisionContext(divisionId);
+
+  await prisma.match.deleteMany({
+    where: { divisionId, stage: { not: MatchStage.GROUP } },
+  });
+
+  pathsFor(divisionId, division.sport.slug, division.slug);
 }
 
 export async function updateMatchDetailsAction(formData: FormData) {

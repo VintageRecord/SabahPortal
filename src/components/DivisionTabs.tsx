@@ -6,9 +6,11 @@ import { usePathname } from "next/navigation";
 export default function DivisionTabs({
   sportSlug,
   divisionSlug,
+  hasBracket = false,
 }: {
   sportSlug: string;
   divisionSlug: string;
+  hasBracket?: boolean;
 }) {
   const pathname = usePathname();
   const base = `/sukan/${sportSlug}/${divisionSlug}`;
@@ -16,6 +18,7 @@ export default function DivisionTabs({
   const tabs = [
     { href: base, label: "Perlawanan", exact: true },
     { href: `${base}/kedudukan`, label: "Kedudukan", exact: false },
+    ...(hasBracket ? [{ href: `${base}/carta`, label: "Carta", exact: false }] : []),
     { href: `${base}/strim`, label: "Strim", exact: false },
   ];
 

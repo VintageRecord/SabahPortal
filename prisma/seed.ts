@@ -1,6 +1,6 @@
 // Seeds the database with the 9-sport Pesta Sukan Antara Wilayah [PESAWI] Ke-13 championship.
 // Run with: npm run db:seed
-import { PrismaClient, MatchStatus, StreamPlatform } from "@prisma/client";
+import { PrismaClient, MatchStatus, MatchStage, StreamPlatform } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -47,6 +47,7 @@ interface SportDef {
   icon: string;
   venues: string[];
   scoreStyle: ScoreStyle;
+  scoreLabel: string;
   hasLineup?: boolean;
   positions?: string[];
   divisions: { slug: string; name: string }[];
@@ -79,6 +80,7 @@ const SPORT_DEFS: SportDef[] = [
     icon: "🏸",
     venues: ["Dewan Badminton MSN Sabah, Kota Kinabalu"],
     scoreStyle: "games3",
+    scoreLabel: "Set",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -87,6 +89,7 @@ const SPORT_DEFS: SportDef[] = [
     icon: "🥎",
     venues: ["Dewan Sepak Takraw Karamunsing"],
     scoreStyle: "sets3",
+    scoreLabel: "Set",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -95,6 +98,7 @@ const SPORT_DEFS: SportDef[] = [
     icon: "🎾",
     venues: ["Kompleks Pickleball Likas"],
     scoreStyle: "games3",
+    scoreLabel: "Gim",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -103,6 +107,7 @@ const SPORT_DEFS: SportDef[] = [
     icon: "🏓",
     venues: ["Dewan Tenis Meja, Kompleks Belia & Sukan KK"],
     scoreStyle: "games3",
+    scoreLabel: "Gim",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -111,6 +116,7 @@ const SPORT_DEFS: SportDef[] = [
     icon: "🏐",
     venues: ["Dewan Bola Tampar Universiti Malaysia Sabah"],
     scoreStyle: "sets5",
+    scoreLabel: "Set",
     hasLineup: true,
     positions: ["Pemukul Luar", "Pemukul Tengah", "Pengesan", "Penyangkak", "Libero"],
     divisions: [
@@ -124,6 +130,7 @@ const SPORT_DEFS: SportDef[] = [
     icon: "🎯",
     venues: ["Dewan Serbaguna, Kompleks Sukan Likas"],
     scoreStyle: "legs7",
+    scoreLabel: "Leg",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -132,6 +139,7 @@ const SPORT_DEFS: SportDef[] = [
     icon: "🔘",
     venues: ["Padang Petanque, Karamunsing"],
     scoreStyle: "points13",
+    scoreLabel: "Mata",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -140,6 +148,7 @@ const SPORT_DEFS: SportDef[] = [
     icon: "⚫",
     venues: ["Dewan Komuniti Penampang"],
     scoreStyle: "games3",
+    scoreLabel: "Set",
     divisions: [{ slug: "berpasukan", name: "Berpasukan" }],
   },
   {
@@ -148,6 +157,7 @@ const SPORT_DEFS: SportDef[] = [
     icon: "⚽",
     venues: ["Arena Futsal MBSA, Kota Kinabalu", "Arena Futsal Inanam"],
     scoreStyle: "goals",
+    scoreLabel: "Gol",
     hasLineup: true,
     positions: ["Penjaga Gol", "Pertahanan", "Sayap", "Pivot"],
     divisions: [
@@ -277,6 +287,8 @@ async function main() {
     divSlug: string;
     divName: string;
   }[] = [];
+  let bracketDemoDivisionId: string | null = null;
+  let bracketDemoTeams: { id: string; name: string; shortName: string; color: string }[] = [];
 
   for (const sportDef of SPORT_DEFS) {
     sportOrder += 1;
@@ -286,6 +298,7 @@ async function main() {
         name: sportDef.name,
         icon: sportDef.icon,
         hasLineup: sportDef.hasLineup ?? false,
+        scoreLabel: sportDef.scoreLabel,
         order: sportOrder,
       },
     });
@@ -344,6 +357,11 @@ async function main() {
         }
       }
       districtOffset += 3;
+
+      if (sportDef.slug === "futsal" && divDef.slug === "lelaki") {
+        bracketDemoDivisionId = division.id;
+        bracketDemoTeams = createdTeams.slice(0, 4);
+      }
 
       const rounds = roundRobinRounds(createdTeams.length);
       for (const [roundIdx, pairs] of rounds.entries()) {
@@ -432,6 +450,69 @@ async function main() {
         }
       }
     }
+  }
+
+  // Demo bracket: Futsal Lelaki, top 4 seeded 1v4 / 2v3, both semifinals and
+  // the final already decided, so the "Carta" feature has something to show.
+  if (bracketDemoDivisionId && bracketDemoTeams.length === 4) {
+    const [seed1, seed2, seed3, seed4] = bracketDemoTeams;
+    const venue = "Arena Futsal MBSA, Kota Kinabalu";
+
+    const sf1 = await prisma.match.create({
+      data: {
+        divisionId: bracketDemoDivisionId,
+        round: 1,
+        stage: MatchStage.SEMIFINAL,
+        bracketSlot: 1,
+        teamAId: seed1.id,
+        teamBId: seed4.id,
+        scoreA: 3,
+        scoreB: 1,
+        winnerId: seed1.id,
+        status: MatchStatus.FINISHED,
+        date: new Date(addDays(TODAY, 2)),
+        time: "15:00",
+        venue,
+        minute: "Tamat",
+      },
+    });
+    const sf2 = await prisma.match.create({
+      data: {
+        divisionId: bracketDemoDivisionId,
+        round: 1,
+        stage: MatchStage.SEMIFINAL,
+        bracketSlot: 2,
+        teamAId: seed2.id,
+        teamBId: seed3.id,
+        scoreA: 4,
+        scoreB: 2,
+        winnerId: seed2.id,
+        status: MatchStatus.FINISHED,
+        date: new Date(addDays(TODAY, 2)),
+        time: "17:00",
+        venue,
+        minute: "Tamat",
+      },
+    });
+
+    await prisma.match.create({
+      data: {
+        divisionId: bracketDemoDivisionId,
+        round: 1,
+        stage: MatchStage.FINAL,
+        bracketSlot: 1,
+        teamAId: sf1.teamAId,
+        teamBId: sf2.teamAId,
+        scoreA: 2,
+        scoreB: 1,
+        winnerId: sf1.teamAId,
+        status: MatchStatus.FINISHED,
+        date: new Date(addDays(TODAY, 3)),
+        time: "19:00",
+        venue,
+        minute: "Tamat",
+      },
+    });
   }
 
   const PLATFORM_LABEL: Record<StreamPlatform, string> = {

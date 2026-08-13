@@ -3,6 +3,9 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import SportIcon from "@/components/icons/SportIcon";
 import AdminMatchCard from "./AdminMatchCard";
+import BracketAdmin from "./BracketAdmin";
+import { getSettings } from "@/lib/data";
+import { computeStandings } from "@/lib/standings";
 
 export default async function AdminDivisionMatchesPage({
   params,
@@ -16,10 +19,25 @@ export default async function AdminDivisionMatchesPage({
   });
   if (!division) notFound();
 
-  const matches = await prisma.match.findMany({
-    where: { divisionId },
-    include: { teamA: true, teamB: true },
-    orderBy: [{ round: "asc" }, { time: "asc" }],
+  const [matches, bracketMatches, teams, settings] = await Promise.all([
+    prisma.match.findMany({
+      where: { divisionId, stage: "GROUP" },
+      include: { teamA: true, teamB: true },
+      orderBy: [{ round: "asc" }, { time: "asc" }],
+    }),
+    prisma.match.findMany({
+      where: { divisionId, stage: { not: "GROUP" } },
+      include: { teamA: true, teamB: true, winner: true },
+      orderBy: [{ stage: "asc" }, { bracketSlot: "asc" }],
+    }),
+    prisma.team.findMany({ where: { divisionId } }),
+    getSettings(),
+  ]);
+
+  const standings = computeStandings(teams, matches, {
+    pointsWin: settings.pointsWin,
+    pointsDraw: settings.pointsDraw,
+    pointsLoss: settings.pointsLoss,
   });
 
   return (
@@ -42,11 +60,24 @@ export default async function AdminDivisionMatchesPage({
         </Link>
       </div>
 
+      <h2 className="mb-3 text-sm font-bold text-slate-700 dark:text-slate-200">
+        Perlawanan Liga (Round-Robin)
+      </h2>
       <div className="space-y-3">
         {matches.map((match) => (
           <AdminMatchCard key={match.id} match={match} />
         ))}
       </div>
+
+      <h2 className="mb-3 mt-8 text-sm font-bold text-slate-700 dark:text-slate-200">
+        Bracket Play-Off
+      </h2>
+      <BracketAdmin
+        divisionId={divisionId}
+        standings={standings}
+        bracketMatches={bracketMatches}
+        defaultVenue={matches[0]?.venue ?? ""}
+      />
     </div>
   );
 }

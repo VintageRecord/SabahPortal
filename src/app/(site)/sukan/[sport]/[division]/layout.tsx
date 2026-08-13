@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getSettings, getSportBySlug } from "@/lib/data";
+import { divisionHasBracket, getSettings, getSportBySlug } from "@/lib/data";
 import DivisionTabs from "@/components/DivisionTabs";
 import SportIcon from "@/components/icons/SportIcon";
 
@@ -16,6 +16,7 @@ export default async function DivisionLayout({
   if (!sport) notFound();
   const division = sport.divisions.find((d) => d.slug === divisionSlug);
   if (!division) notFound();
+  const hasBracket = await divisionHasBracket(division.id);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
@@ -49,7 +50,7 @@ export default async function DivisionLayout({
         </div>
       )}
 
-      <DivisionTabs sportSlug={sport.slug} divisionSlug={divisionSlug} />
+      <DivisionTabs sportSlug={sport.slug} divisionSlug={divisionSlug} hasBracket={hasBracket} />
 
       <div className="mt-4">{children}</div>
     </div>

@@ -15,6 +15,12 @@ enum MatchStatus {
   POSTPONED
 }
 
+enum MatchStage {
+  GROUP
+  SEMIFINAL
+  FINAL
+}
+
 enum StreamPlatform {
   YOUTUBE
   TIKTOK
@@ -42,6 +48,7 @@ model Sport {
   name      String
   icon      String
   hasLineup Boolean    @default(false)
+  scoreLabel String    @default("Mata")
   order     Int        @default(0)
   divisions Division[]
 
@@ -78,6 +85,7 @@ model Team {
 
   homeMatches Match[] @relation("TeamA")
   awayMatches Match[] @relation("TeamB")
+  wins        Match[] @relation("MatchWinner")
   players     Player[]
   matchEvents MatchEvent[]
 
@@ -118,6 +126,11 @@ model Match {
   venue      String
   minute     String      @default("")
 
+  stage       MatchStage @default(GROUP)
+  bracketSlot Int?
+  winnerId    String?
+  winner      Team?      @relation("MatchWinner", fields: [winnerId], references: [id], onDelete: SetNull)
+
   events MatchEvent[]
 
   createdAt DateTime @default(now())
@@ -125,6 +138,7 @@ model Match {
 
   @@index([divisionId])
   @@index([status])
+  @@index([divisionId, stage])
 }
 
 model MatchEvent {
