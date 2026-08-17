@@ -255,7 +255,7 @@ function RoundBasedMatchCard({
   onChangeStatus: (status: MatchStatus) => void;
 }) {
   const roundByNumber = new Map(rounds.map((r) => [r.round, r]));
-  const showRound3 = scoreA === 1 && scoreB === 1;
+  const showRound3 = (scoreA === 1 && scoreB === 1) || roundByNumber.has(3);
   const winner = status === "FINISHED" ? (scoreA > scoreB ? match.teamA : scoreB > scoreA ? match.teamB : null) : null;
 
   return (
